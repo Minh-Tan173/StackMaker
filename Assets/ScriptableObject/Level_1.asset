@@ -1,0 +1,213 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c81e36270d7282a448d04a56c5b4aef2, type: 3}
+  m_Name: Level_1
+  m_EditorClassIdentifier: Assembly-CSharp::LevelSO
+  winPosPrefab: {fileID: 3256946138913599874, guid: 8433fa50b6f21114885c6995e53d2876, type: 3}
+  chunkList:
+  - chunkName: Chunk 1
+    chunkWidth: 9
+    chunkHeight: 7
+    chunkPos: {x: 0, y: 0, z: 0}
+    chunkRotation: {x: 0, y: 0, z: 0}
+    pathNodeList:
+    - nodePos: {x: 1, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 5}
+      hasCornerOn: 1
+    - nodePos: {x: 6, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 3}
+      hasCornerOn: 1
+    - nodePos: {x: 8, y: 3}
+      hasCornerOn: 0
+    bridgeCount: 6
+  - chunkName: Chunk 2
+    chunkWidth: 11
+    chunkHeight: 9
+    chunkPos: {x: 15, y: 0, z: -1}
+    chunkRotation: {x: 0, y: 0, z: 0}
+    pathNodeList:
+    - nodePos: {x: 0, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 1}
+      hasCornerOn: 1
+    - nodePos: {x: 4, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 9, y: 1}
+      hasCornerOn: 1
+    - nodePos: {x: 9, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 9, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 9, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 6}
+      hasCornerOn: 1
+    - nodePos: {x: 7, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 0}
+      hasCornerOn: 0
+    bridgeCount: 17
+  - chunkName: Chunk 3
+    chunkWidth: 10
+    chunkHeight: 12
+    chunkPos: {x: 16, y: 0, z: -30}
+    chunkRotation: {x: 0, y: 0, z: 0}
+    pathNodeList:
+    - nodePos: {x: 5, y: 11}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 10}
+      hasCornerOn: 1
+    - nodePos: {x: 4, y: 10}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 10}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 10}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 10}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 9}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 8}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 7}
+      hasCornerOn: 1
+    - nodePos: {x: 2, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 7}
+      hasCornerOn: 1
+    - nodePos: {x: 8, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 2}
+      hasCornerOn: 1
+    - nodePos: {x: 6, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 9, y: 1}
+      hasCornerOn: 0
+    bridgeCount: 15
