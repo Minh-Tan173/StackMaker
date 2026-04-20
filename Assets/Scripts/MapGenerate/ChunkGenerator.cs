@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ChunkGenerator : MonoBehaviour
 {
+    public static ChunkGenerator Instance { get; private set; }
+
     [Header("Path Data")]
     [SerializeField] private LevelSO levelSO;
 
@@ -11,22 +13,16 @@ public class ChunkGenerator : MonoBehaviour
     [SerializeField] private Transform platformPrefab;
     [SerializeField] private Transform bridgePrefab;
 
-    //private List<GridNode.Grid[,]> gridMapList;
-    //private List<Dictionary>
-
-    //private Dictionary<Vector2Int, PlatformVisual> gridNodeDict;
-
     private List<ChunkInstance> chunkList;
 
     private void Awake() {
 
+        Instance = this;
+
         chunkList = new List<ChunkInstance>();
 
-    }
-
-    private void Start() {
-
         InitializeChunk();
+
     }
 
     private void InitializeChunk() {
@@ -199,6 +195,15 @@ public class ChunkGenerator : MonoBehaviour
         else {
             Debug.LogError("Nothing dir true");
         }
+    }
+    
+
+    public LevelSO GetLevelSO() {
+        return this.levelSO;
+    }
+
+    public List<ChunkInstance> GetChunkList() {
+        return this.chunkList;
     }
 
 }
