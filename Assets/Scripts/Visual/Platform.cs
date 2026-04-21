@@ -14,6 +14,7 @@ public class Platform : MonoBehaviour
     [SerializeField] private Transform stackVisual;
 
     private GridNode.NodeID nodeID;
+    private bool hasCornerOn = false;
 
     private void Awake() {
 
@@ -49,6 +50,8 @@ public class Platform : MonoBehaviour
         
     public void ShowCorner(Corner.CornerType cornerType) {
 
+        hasCornerOn = true;
+
         OnShowCorner?.Invoke(this, new ShowCornerEventArgs { cornerType = cornerType });
     }
 
@@ -61,5 +64,9 @@ public class Platform : MonoBehaviour
 
     public GridNode.NodeID GetNodeID() {
         return this.nodeID;
+    }
+
+    public bool HasCornerOn() {
+        return this.hasCornerOn;
     }
 }

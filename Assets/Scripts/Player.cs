@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class Player : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class Player : MonoBehaviour
     private Vector3 moveDir;
     private Vector3 targetPos;
     private bool canMove = false;
+    private GameInput.Direct currentDirect;
+    private Corner pendingCorner;
     #endregion
 
     private void Awake() {
@@ -43,8 +46,13 @@ public class Player : MonoBehaviour
 
     private void GameInput_OnMovedCommand(object sender, GameInput.OnMovedCommandEventArgs e) {
 
+        if (canMove) {
+            // Is is moving --> dont get new input
+            return;
+        }
 
-        Vector3 inputVector = GetMoveDir(e.moveDirect);
+        this.currentDirect = e.moveDirect;
+        Vector3 inputVector = GetMoveDir(currentDirect);
 
         StartNewSegment(inputVector);
     }
@@ -60,7 +68,22 @@ public class Player : MonoBehaviour
         float sqrDistance = (targetPos - this.transform.position).sqrMagnitude;
 
         if (sqrDistance <= 0.1f * 0.1f) {
+
+            this.transform.position = targetPos;
             canMove = false;
+
+            if (pendingCorner != null) {
+                // If having Pending Corner
+
+                GameInput.Direct nextDirect = pendingCorner.GetOtherDir(this.currentDirect);
+
+                if (nextDirect != GameInput.Direct.Default) {
+                    currentDirect = nextDirect;
+                    StartNewSegment(GetMoveDir(this.currentDirect));
+                }
+
+                pendingCorner = null;
+            }
         }
        
     }
@@ -119,6 +142,18 @@ public class Player : MonoBehaviour
             case GameInput.Direct.Left: return new Vector3(0f, 0f, 1f);
 
             default: return Vector3.zero;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other) {
+
+
+        if (other.TryGetComponent<Platform>(out Platform platform)) {
+            
+            if (platform.HasCornerOn()) {
+
+                this.pendingCorner = other.GetComponentInChildren<Corner>();
+            }
         }
     }
 

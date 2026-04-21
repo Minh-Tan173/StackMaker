@@ -66,8 +66,40 @@ public class Corner : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
-    public void GetOtherDir() {
+    public GameInput.Direct GetOtherDir(GameInput.Direct playerDir) {
 
-       
+        switch (playerDir) {
+
+            case GameInput.Direct.Forward:
+
+                if (curCornerType == CornerType.LeftDown) { return GameInput.Direct.Right; }
+                if (curCornerType == CornerType.LeftUp) { return GameInput.Direct.Left; }
+
+                break;
+
+            case GameInput.Direct.Back:
+
+                if (curCornerType == CornerType.RightDown) { return GameInput.Direct.Right; }
+                if (curCornerType == CornerType.RightUp) { return GameInput.Direct.Left; }
+
+                break;
+
+            case GameInput.Direct.Right:
+
+                if (curCornerType == CornerType.RightUp) { return GameInput.Direct.Forward; }
+                if (curCornerType == CornerType.LeftUp) { return GameInput.Direct.Back; }
+
+                break;
+
+            case GameInput.Direct.Left:
+
+                if (curCornerType == CornerType.RightDown) { return GameInput.Direct.Forward; }
+                if (curCornerType == CornerType.LeftDown) { return GameInput.Direct.Back; }
+
+                break;
+        }
+
+        Debug.LogError("Corner dont match with any player direction");
+        return GameInput.Direct.Default;
     }
 }
