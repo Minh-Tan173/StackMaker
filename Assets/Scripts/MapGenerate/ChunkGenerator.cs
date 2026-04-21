@@ -42,10 +42,10 @@ public class ChunkGenerator : MonoBehaviour
                 for (int y = 0; y < chunkData.chunkHeight; y++) {
 
                     Vector2Int nodePos = new Vector2Int(x, y);
-                    PlatformVisual platformVisual = SpawnPlatform(x, y, newChunk.chunkTransform);
+                    Platform platformVisual = SpawnPlatform(x, y, newChunk.chunkTransform);
 
                     newChunk.gridNodeDict.Add(nodePos, platformVisual);
-                    newChunk.gridMaps[x, y] = GridNode.Grid.Empty;
+                    newChunk.gridMaps[x, y] = GridNode.NodeID.Empty;
                 }
             }
 
@@ -59,14 +59,14 @@ public class ChunkGenerator : MonoBehaviour
 
     }
 
-    private PlatformVisual SpawnPlatform(int x, int y, Transform parent) {
+    private Platform SpawnPlatform(int x, int y, Transform parent) {
 
         Transform platformTransform = Instantiate(platformPrefab, parent);
 
         platformTransform.localPosition = new Vector3(x, 0, y);
         platformTransform.gameObject.name = $"Platform_{x}_{y}";
 
-        return platformTransform.GetComponentInChildren<PlatformVisual>();
+        return platformTransform.GetComponent<Platform>();
     }
 
     private void InitializePathByChunk(ChunkInstance chunkInstance, ChunkData chunkData) {
@@ -79,7 +79,7 @@ public class ChunkGenerator : MonoBehaviour
             Vector2Int nodePos = pathNode.nodePos;
 
             chunkInstance.gridNodeDict[nodePos].ShowStack();
-            chunkInstance.gridMaps[nodePos.x, nodePos.y] = GridNode.Grid.Path;
+            chunkInstance.gridMaps[nodePos.x, nodePos.y] = GridNode.NodeID.Path;
         }
 
         // Spawn Corner
@@ -93,10 +93,10 @@ public class ChunkGenerator : MonoBehaviour
         // Spawn floor
         foreach (Vector2Int keyPos in chunkInstance.gridNodeDict.Keys) {
 
-            if (chunkInstance.gridMaps[keyPos.x, keyPos.y] != GridNode.Grid.Path) {
+            if (chunkInstance.gridMaps[keyPos.x, keyPos.y] != GridNode.NodeID.Path) {
 
                 chunkInstance.gridNodeDict[keyPos].ShowFloor();
-                chunkInstance.gridMaps[keyPos.x, keyPos.y] = GridNode.Grid.Floor;
+                chunkInstance.gridMaps[keyPos.x, keyPos.y] = GridNode.NodeID.Floor;
             }
 
         }
@@ -181,16 +181,16 @@ public class ChunkGenerator : MonoBehaviour
         bool hasLeftPath = chunkInstance.IsPathNode(leftNode);
 
         if (hasRightPath && hasDownPath) {
-            chunkInstance.gridNodeDict[nodePos].ShowCorner(PlatformVisual.CornerType.RightDown);
+            chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.RightDown);
         }
         else if (hasLeftPath && hasDownPath) {
-            chunkInstance.gridNodeDict[nodePos].ShowCorner(PlatformVisual.CornerType.LeftDown);
+            chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.LeftDown);
         }
         else if (hasRightPath && hasUpPath) {
-            chunkInstance.gridNodeDict[nodePos].ShowCorner(PlatformVisual.CornerType.RightUp);
+            chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.RightUp);
         }
         else if (hasLeftPath && hasUpPath) {
-            chunkInstance.gridNodeDict[nodePos].ShowCorner(PlatformVisual.CornerType.LeftUp);
+            chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.LeftUp);
         }
         else {
             Debug.LogError("Nothing dir true");
@@ -210,16 +210,16 @@ public class ChunkGenerator : MonoBehaviour
 
 public class ChunkInstance {
     public Transform chunkTransform { get; private set; }
-    public GridNode.Grid[,] gridMaps { get; private set; }
-    public Dictionary<Vector2Int, PlatformVisual> gridNodeDict { get; private set; }
+    public GridNode.NodeID[,] gridMaps { get; private set; }
+    public Dictionary<Vector2Int, Platform> gridNodeDict { get; private set; }
 
     private ChunkData chunkData;
 
     public ChunkInstance(int index, ChunkData chunkData, Transform parent) {
 
         this.chunkData = chunkData;
-        this.gridNodeDict = new Dictionary<Vector2Int, PlatformVisual>();
-        this.gridMaps = new GridNode.Grid[chunkData.chunkWidth, chunkData.chunkHeight];
+        this.gridNodeDict = new Dictionary<Vector2Int, Platform>();
+        this.gridMaps = new GridNode.NodeID[chunkData.chunkWidth, chunkData.chunkHeight];
 
         // Setup chunk
         GameObject chunkObj = new GameObject($"Chunk_{index}");
@@ -236,6 +236,6 @@ public class ChunkInstance {
     }
 
     public bool IsPathNode(Vector2Int pos) {
-        return IsValidNode(pos) && gridMaps[pos.x, pos.y] == GridNode.Grid.Path;
+        return IsValidNode(pos) && gridMaps[pos.x, pos.y] == GridNode.NodeID.Path;
     }
 }

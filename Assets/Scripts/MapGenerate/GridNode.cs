@@ -3,17 +3,17 @@ using UnityEngine;
 [System.Serializable]
 public class GridNode
 {
-    public enum Grid {
+    public enum NodeID {
         Empty,
         Floor,
         Path, 
     }
 
-    public Grid nodeID;
+    public NodeID nodeID;
     public Vector2Int nodePos;
     public bool hasStackOn;
 
-    public GridNode(Vector2Int nodePos, Grid nodeID) {
+    public GridNode(Vector2Int nodePos, NodeID nodeID) {
 
         this.nodePos = nodePos;
         this.nodeID = nodeID;
