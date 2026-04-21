@@ -15,6 +15,7 @@ public class Platform : MonoBehaviour
 
     private GridNode.NodeID nodeID;
     private bool hasCornerOn = false;
+    private bool isStackVisualOn = false;
 
     private void Awake() {
 
@@ -46,6 +47,8 @@ public class Platform : MonoBehaviour
 
         stackVisual.gameObject.SetActive(true);
         floorVisual.gameObject.SetActive(false);
+
+        isStackVisualOn = true;
     }
         
     public void ShowCorner(Corner.CornerType cornerType) {
@@ -56,8 +59,10 @@ public class Platform : MonoBehaviour
     }
 
     public void HideStack() {
+
         if (stackVisual.gameObject.activeSelf) {
 
+            isStackVisualOn = false;
             stackVisual.gameObject.SetActive(false);
         }
     }
@@ -68,5 +73,9 @@ public class Platform : MonoBehaviour
 
     public bool HasCornerOn() {
         return this.hasCornerOn;
+    }
+
+    public bool IsStackVisualOn() {
+        return this.isStackVisualOn;
     }
 }

@@ -1,11 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
-public class Player : MonoBehaviour
-{
+public class Player : MonoBehaviour {
     [Header("Child")]
     [SerializeField] private Transform playerVisual;
     [SerializeField] private Transform stackContainer;
@@ -15,9 +13,13 @@ public class Player : MonoBehaviour
 
     [Header("Layer")]
     [SerializeField] private LayerMask platformLayer;
-    
 
+    [Header("Stack Data")]
+    [SerializeField] private Transform stackPrefab;
+    [SerializeField] private float stackHeight;
+    
     private Rigidbody rbPlayer;
+    private Stack<Transform> stackCollection;
 
     #region Movement Behavior
     private Vector3 moveDir;
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour
     private void Awake() {
 
         rbPlayer = GetComponent<Rigidbody>();
+        stackCollection = new Stack<Transform>();
     }
 
     private void Start() {
@@ -145,14 +148,73 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void AddStack() {
+
+        if (stackCollection.Count > 0) {
+            // If having stack in stackCollection ---> Up their height and player height before add new stack
+
+            // Up height stack
+            foreach (Transform stack in stackContainer) {
+
+                stack.localPosition += Vector3.up * stackHeight;
+            }
+
+            // Up height Player
+            playerVisual.localPosition += Vector3.up * stackHeight;
+        }
+
+        // Spawn new stack
+        Transform stackTransform = Instantiate(stackPrefab, stackContainer);
+        stackTransform.localPosition = Vector3.zero;
+
+        stackCollection.Push(stackTransform);
+    }
+
+    private void RemoveStack() {
+
+        // Remove first stack
+        Transform bottomStack = stackCollection.Pop();
+        Destroy(bottomStack.gameObject);
+
+        //
+        foreach (Transform stack in stackCollection) {
+
+            stack.localPosition -= Vector3.up * stackHeight;
+        }
+
+        //
+        playerVisual.localPosition -= Vector3.up * stackHeight;
+        
+    }
+
     private void OnTriggerEnter(Collider other) {
 
 
         if (other.TryGetComponent<Platform>(out Platform platform)) {
             
+            // Handle interaction with corner
             if (platform.HasCornerOn()) {
 
                 this.pendingCorner = other.GetComponentInChildren<Corner>();
+            }
+
+            // Handle interaction with Path plaform
+            if (platform.IsStackVisualOn()) {
+
+                platform.HideStack();
+
+                AddStack();
+
+            }
+        }
+        else if (other.TryGetComponent<Bridge>(out Bridge bridge)) {
+            // If interaction with Bride platform
+
+            if (!bridge.IsOnStackVisual()) {
+
+                bridge.ShowStack();
+
+                RemoveStack();
             }
         }
     }

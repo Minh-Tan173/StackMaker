@@ -5,18 +5,28 @@ public class Bridge : MonoBehaviour
     [Header("Visual")]
     [SerializeField] private Transform stackVisual;
 
+    private bool isOnStackVisual;
+
     private void Start() {
 
         // After spawn
         HideStack();
     }
 
-    private void ShowStack() {
+    private void HideStack() {
+
+        isOnStackVisual = false;
+        stackVisual.gameObject.SetActive(false);
+    }
+
+    public void ShowStack() {
+
+        isOnStackVisual = true;
         stackVisual.gameObject.SetActive(true);
     }
 
-    private void HideStack() {
-        stackVisual.gameObject.SetActive(false);
+    public bool IsOnStackVisual() {
+        return this.isOnStackVisual;
     }
 
     public static void SpawnBridge(Transform bridgePrefab, Transform parent, Vector3 spawnPos , Vector3 angleRotation) {

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3256946138913599874}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WinPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
