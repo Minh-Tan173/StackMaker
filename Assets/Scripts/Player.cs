@@ -61,7 +61,7 @@ public class Player : MonoBehaviour {
     }
 
     private void Update() {
-        
+
         if (!canMove) {
             return;
         }
@@ -96,7 +96,7 @@ public class Player : MonoBehaviour {
         // Get Spawn Pos
         Vector2Int startPathNode = ChunkGenerator.Instance.GetLevelSO().chunkList[0].pathNodeList[0].nodePos;
         Vector3 spawnPos = ChunkGenerator.Instance.GetChunkList()[0].gridNodeDict[startPathNode].transform.position;
-        Vector3 spawnPosOffset = spawnPos + Vector3.up * 2f;
+        Vector3 spawnPosOffset = spawnPos + Vector3.up;
 
         // Set Player pos
         this.transform.position = spawnPosOffset;
@@ -112,8 +112,16 @@ public class Player : MonoBehaviour {
         if (hitArray.Length > 0) {
 
             List<RaycastHit> sortedHit = hitArray.OrderBy(h => (h.transform.position - this.transform.position).sqrMagnitude).ToList();
-
+            
             for (int i = 0; i < sortedHit.Count; i++) {
+
+                if (sortedHit[i].collider.TryGetComponent<WinPos>(out WinPos winPos)) {
+
+                    targetPos = winPos.GetTargetPoint().position;
+                    canMove = true;
+
+                    break;
+                }
 
                 if (sortedHit[i].collider.TryGetComponent<Platform>(out Platform platform)) {
 
