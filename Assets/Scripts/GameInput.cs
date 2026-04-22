@@ -80,6 +80,8 @@ public class GameInput : MonoBehaviour
 
     private void MousePress_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 
+        //if (LevelManager.Instance.GetCurrentLevelState() == LevelManager.LevelState.G)
+
         realsedPos = GetMouseScreenPos();
 
         float sqrMoveDis = (pressedPos - realsedPos).sqrMagnitude;

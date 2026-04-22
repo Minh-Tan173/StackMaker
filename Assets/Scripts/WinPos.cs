@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class WinPos : MonoBehaviour
@@ -9,6 +10,11 @@ public class WinPos : MonoBehaviour
 
     private const string PLAYER_TAG = "Player";
 
+    private void Start() {
+
+        HidePartical();
+    }
+
     public Transform GetTargetPoint() {
         return this.targetPoint;
     }
@@ -17,7 +23,23 @@ public class WinPos : MonoBehaviour
 
         if (other.CompareTag(PLAYER_TAG)) {
 
+            StartCoroutine(WiningCoroutine());
+
         }
+    }
+
+    private IEnumerator WiningCoroutine() {
+
+        ShowPartical();
+
+        LevelManager.Instance.OnWin();
+
+        while (particleSystemArray[0].IsAlive()) {
+
+            yield return null;
+        }
+
+        HidePartical();
     }
 
     private void ShowPartical() {
