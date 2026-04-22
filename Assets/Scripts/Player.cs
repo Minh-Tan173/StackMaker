@@ -1,10 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
+
+    public event EventHandler StartMoving;
+
     [Header("Child")]
     [SerializeField] private Transform playerVisual;
     [SerializeField] private Transform stackContainer;
@@ -98,7 +102,7 @@ public class Player : MonoBehaviour {
         // Get Spawn Pos
         Vector2Int startPathNode = ChunkGenerator.Instance.GetLevelSO().chunkList[0].pathNodeList[0].nodePos;
         Vector3 spawnPos = ChunkGenerator.Instance.GetChunkList()[0].gridNodeDict[startPathNode].transform.position;
-        Vector3 spawnPosOffset = spawnPos + Vector3.up;
+        Vector3 spawnPosOffset = spawnPos + Vector3.up * 0.5f;
 
         // Set Player pos
         this.transform.position = spawnPosOffset;
@@ -134,6 +138,8 @@ public class Player : MonoBehaviour {
 
                         targetPos = SnapToGrid(sortedHit[i - 1].transform.position);
                         canMove = true;
+
+                        StartMoving?.Invoke(this, EventArgs.Empty);
 
                         break;
                     }
