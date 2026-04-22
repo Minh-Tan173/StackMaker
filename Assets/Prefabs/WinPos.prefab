@@ -69,6 +69,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WinPos
   targetPoint: {fileID: 2731441604966178307}
+  particleSystemArray:
+  - {fileID: 3544031694099058845}
+  - {fileID: 3543834014904920740}
 --- !u!1 &8102768410139789921
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,6 +155,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0
       objectReference: {fileID: 0}
+    - target: {fileID: 199253599294116571, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199265196540097562, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199307986835760201, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199409367787607441, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199701222867032175, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199942783713296383, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -160,6 +187,16 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 5968017123010038553}
   m_SourcePrefab: {fileID: 100100000, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+--- !u!198 &3543834014904920740 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198957174810120253, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+  m_PrefabInstance: {fileID: 3741625139914619545}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3544031694099058845 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198723746604263940, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}
+  m_PrefabInstance: {fileID: 3741625139914619545}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3738596446997983807 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4157892317022374, guid: bec8fbf23e70b4f42b574dddd6681a4c, type: 3}

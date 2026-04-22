@@ -55,10 +55,11 @@ public class ChunkGenerator : MonoBehaviour
             // Spawn Path
             InitializePathByChunk(newChunk, chunkData);
 
+            // Spawn Bridge
             InitializeBridge(newChunk, chunkData);
         }
 
-        // After Spawn path - bridge --> Set chunkPos
+        // After spawn Path/Bridge --> Set chunkPos base on bridge
         Vector3 currentAnchor = Vector3.zero;
 
         for (int i = 0; i < chunkList.Count; i++) {
@@ -122,7 +123,7 @@ public class ChunkGenerator : MonoBehaviour
             if (chunkInstance.gridMaps[keyPos.x, keyPos.y] != GridNode.NodeID.Path) {
 
                 chunkInstance.gridNodeDict[keyPos].ShowFloor();
-                chunkInstance.gridMaps[keyPos.x, keyPos.y] = GridNode.NodeID.Floor;
+                chunkInstance.gridMaps[keyPos.x, keyPos.y] = GridNode.NodeID.Wall;
             }
 
         }

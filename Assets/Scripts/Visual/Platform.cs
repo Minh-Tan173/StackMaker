@@ -35,7 +35,7 @@ public class Platform : MonoBehaviour
 
     public void ShowFloor() {
 
-        ChangeNodeIDTo(GridNode.NodeID.Floor);
+        ChangeNodeIDTo(GridNode.NodeID.Wall);
 
         floorVisual.gameObject.SetActive(true);
         stackVisual.gameObject.SetActive(false);

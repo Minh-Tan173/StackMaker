@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
@@ -127,7 +128,7 @@ public class Player : MonoBehaviour {
                 if (sortedHit[i].collider.TryGetComponent<Platform>(out Platform platform)) {
 
                     // Find nearest Floor Node
-                    if (platform.GetNodeID() == GridNode.NodeID.Floor) {
+                    if (platform.GetNodeID() == GridNode.NodeID.Wall) {
 
                         if (i == 0) { break; } // Đối diện moveDir là floor
 
@@ -157,7 +158,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    private void AddStack() {
+    private void AddBrick() {
 
         if (stackCollection.Count > 0) {
             // If having stack in stackCollection ---> Up their height and player height before add new stack
@@ -179,7 +180,7 @@ public class Player : MonoBehaviour {
         stackCollection.Push(stackTransform);
     }
 
-    private void RemoveStack() {
+    private void RemoveBrick() {
 
         // Remove first stack
         Transform bottomStack = stackCollection.Pop();
@@ -199,9 +200,16 @@ public class Player : MonoBehaviour {
     private void OnTriggerEnter(Collider other) {
 
 
-        if (other.TryGetComponent<Platform>(out Platform platform)) {
+        if (other.CompareTag(GameTag.PLATFORM_TAG)) {
+
+            Platform platform = other.GetComponent<Platform>();
             
-            // Handle interaction with corner
+            if (platform == null) {
+                Debug.LogError("This platform dont attached by Platform script");
+                return;
+            }
+
+            // Handle interaction with Corner
             if (platform.HasCornerOn()) {
 
                 this.pendingCorner = other.GetComponentInChildren<Corner>();
@@ -212,18 +220,24 @@ public class Player : MonoBehaviour {
 
                 platform.HideStack();
 
-                AddStack();
+                AddBrick();
 
             }
         }
-        else if (other.TryGetComponent<Bridge>(out Bridge bridge)) {
-            // If interaction with Bride platform
+        else if (other.CompareTag(GameTag.BRIDGE_TAG)) {
+            // Interaction with Bridge
+
+            Bridge bridge = other.GetComponent<Bridge>();
+
+            if (bridge == null) {
+                Debug.LogError("This bridge dont attached by Platform script");
+                return;
+            }
 
             if (!bridge.IsOnStackVisual()) {
 
                 bridge.ShowStack();
-
-                RemoveStack();
+                RemoveBrick();
             }
         }
     }
