@@ -20,10 +20,6 @@ public class ChunkData {
     public int chunkWidth;
     public int chunkHeight;
 
-    [Header("Chunk Pos")]
-    public Vector3 chunkPos;
-    public Vector3 chunkRotation;
-
     [Header("Path Data")]
     public List<PathNode> pathNodeList;
 

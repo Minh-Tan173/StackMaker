@@ -14,12 +14,15 @@ public class ChunkGenerator : MonoBehaviour
     [SerializeField] private Transform bridgePrefab;
 
     private List<ChunkInstance> chunkList;
+    private List<Vector3> lastBrideNodePosPlus;
 
     private void Awake() {
 
         Instance = this;
 
         chunkList = new List<ChunkInstance>();
+
+        lastBrideNodePosPlus = new List<Vector3>();
 
         InitializeChunk();
 
@@ -51,11 +54,34 @@ public class ChunkGenerator : MonoBehaviour
 
             // Spawn Path
             InitializePathByChunk(newChunk, chunkData);
+
+            InitializeBridge(newChunk, chunkData);
+        }
+
+        // After Spawn path - bridge --> Set chunkPos
+        Vector3 currentAnchor = Vector3.zero;
+
+        for (int i = 0; i < chunkList.Count; i++) {
+
+            Transform chunkTransform = chunkList[i].chunkTransform;
+            ChunkData chunkData = levelSO.chunkList[i];
+
+            if (i == 0) {
+                chunkTransform.localPosition = Vector3.zero;
+            }
+            else {
+                Vector2Int entryNodeLocal = chunkData.pathNodeList[0].nodePos;
+                Vector3 entryOffset = new Vector3(entryNodeLocal.x, 0f, entryNodeLocal.y);
+
+                chunkTransform.localPosition = currentAnchor - entryOffset;
+            }
+
+
+            currentAnchor = chunkTransform.localPosition + lastBrideNodePosPlus[i];
         }
 
         // After Spawn chunk done --> Spawn WinPos
-        InitializeWinPos();
-
+        InitializeWinPos(currentAnchor);
 
     }
 
@@ -101,7 +127,6 @@ public class ChunkGenerator : MonoBehaviour
 
         }
 
-        InitializeBridge(chunkInstance, chunkData);
     }
 
     private void InitializeBridge(ChunkInstance chunkInstance, ChunkData chunk) {
@@ -137,7 +162,7 @@ public class ChunkGenerator : MonoBehaviour
             Debug.LogError("Nothing dir true");
         }
 
-            // 2. Spawn Bridge
+        // 2. Spawn Bridge
         int bridgeCount = chunk.bridgeCount;
         for (int i = 0; i < bridgeCount; i++) {
 
@@ -145,27 +170,20 @@ public class ChunkGenerator : MonoBehaviour
 
             Bridge.SpawnBridge(bridgePrefab, chunkInstance.chunkTransform, spawnPos, angle);
         }
-        
+
+        Vector3 nextChunkPos = spawnPos + spawnPosPlus;
+        lastBrideNodePosPlus.Add(nextChunkPos);
     }
 
-    private void InitializeWinPos() {
-        if (chunkList.Count == 0) return;
+    private void InitializeWinPos(Vector3 finalAnchorPos) {
 
-        ChunkInstance lastChunkInstance = chunkList[chunkList.Count - 1];
-        ChunkData lastChunkData = levelSO.chunkList[levelSO.chunkList.Count - 1];
-
-        PathNode lastNode = lastChunkData.pathNodeList[lastChunkData.pathNodeList.Count - 1];
-
-        float offsetX = lastNode.nodePos.x + lastChunkData.bridgeCount + 1;
-
-        Vector3 localWinPos = new Vector3(offsetX, 0, lastNode.nodePos.y);
-
-
-        Vector3 worldWinPos = lastChunkInstance.chunkTransform.TransformPoint(localWinPos);
+        if (chunkList.Count == 0 || levelSO.winPosPrefab == null) return;
 
         // Spawn
         Transform winPosTransform = Instantiate(levelSO.winPosPrefab, this.transform);
-        winPosTransform.position = worldWinPos;
+
+        // Gắn với điểm neo cuối cùng (Local Space)
+        winPosTransform.localPosition = finalAnchorPos;
     }
 
     private void ApplyCornerRotation(ChunkInstance chunkInstance, Vector2Int nodePos) {
@@ -225,11 +243,7 @@ public class ChunkInstance {
         GameObject chunkObj = new GameObject($"Chunk_{index}");
         chunkTransform = chunkObj.transform;
         chunkTransform.SetParent(parent);
-        chunkTransform.localPosition = chunkData.chunkPos;
-        chunkTransform.localRotation = Quaternion.Euler(chunkData.chunkRotation);
     }
-
-
 
     public bool IsValidNode(Vector2Int pos) {
         return pos.x >= 0 && pos.x < chunkData.chunkWidth && pos.y >= 0 && pos.y < chunkData.chunkHeight;

@@ -68,6 +68,7 @@ public class Player : MonoBehaviour {
             
         transform.position += moveDir * moveSpeed * Time.deltaTime;
 
+
         float sqrDistance = (targetPos - this.transform.position).sqrMagnitude;
 
         if (sqrDistance <= 0.1f * 0.1f) {
