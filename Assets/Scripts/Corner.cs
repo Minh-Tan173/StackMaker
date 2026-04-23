@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Corner : MonoBehaviour
@@ -24,9 +25,21 @@ public class Corner : MonoBehaviour
 
     private void Awake() {
 
-        Hide();
+        //Hide();
 
+        platform.OnHideCorner += Platform_OnHideCorner; ;
         platform.OnShowCorner += PlatformVisual_OnShowCorner;
+
+    }
+
+    private void OnDestroy() {
+
+        Hide();
+    }
+
+    private void Platform_OnHideCorner(object sender, EventArgs e) {
+
+        Hide();
     }
 
     private void PlatformVisual_OnShowCorner(object sender, Platform.ShowCornerEventArgs e) {

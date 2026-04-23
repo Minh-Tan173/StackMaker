@@ -9,6 +9,8 @@ public class Platform : MonoBehaviour
         public Corner.CornerType cornerType;
     }
 
+    public event EventHandler OnHideCorner;
+
     [Header("Child Visual")]
     [SerializeField] private Transform floorVisual;
     [SerializeField] private Transform stackVisual;
@@ -17,20 +19,16 @@ public class Platform : MonoBehaviour
     private bool hasCornerOn = false;
     private bool isStackVisualOn = false;
 
-    private void Awake() {
-
-        // After Spawn
-        OnInit();
+    private void ChangeNodeIDTo(GridNode.NodeID nodeID) {
+        this.nodeID = nodeID;
     }
 
-    private void OnInit() {
+    public void ResetToDefault() {
 
         floorVisual.gameObject.SetActive(false);
         stackVisual.gameObject.SetActive(false);
-    }
 
-    private void ChangeNodeIDTo(GridNode.NodeID nodeID) {
-        this.nodeID = nodeID;
+        OnHideCorner?.Invoke(this, EventArgs.Empty);
     }
 
     public void ShowFloor() {
