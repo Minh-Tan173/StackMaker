@@ -402,6 +402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca69ad9b7b8f5d42b3aa25dcb3a30ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
+  levelManagerSO: {fileID: 11400000, guid: b7a72abf8a5fb5e4eb769d4a0c3789f2, type: 2}
 --- !u!4 &1021275569
 Transform:
   m_ObjectHideFlags: 0
@@ -715,7 +716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27bbc12fc3431c4bb67349e53ad343f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridGenerator
-  levelSO: {fileID: 11400000, guid: f950d6069c5e26e439ab24822f5af126, type: 2}
+  levelSO: {fileID: 11400000, guid: dbf1d063c84630a4ea8c7ef200274929, type: 2}
   platformPrefab: {fileID: 6219992150755151754, guid: 8f9f368e381daab4da845763d32316d6, type: 3}
   bridgePrefab: {fileID: 683010532310645628, guid: 86e8b5d453060d942ae68f38dab45fe5, type: 3}
 --- !u!4 &2122997649

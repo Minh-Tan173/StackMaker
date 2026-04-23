@@ -36,6 +36,15 @@ public class ChunkGenerator : MonoBehaviour
 
     }
 
+    private void Start() {
+
+        LevelManager.Instance.LoadNewMap += LevelManager_LoadNewMap;
+    }
+
+    private void LevelManager_LoadNewMap(object sender, System.EventArgs e) {
+        throw new System.NotImplementedException();
+    }
+
     private void InitializeChunk() {
 
         int chunkCount = levelSO.chunkList.Count;
@@ -81,7 +90,7 @@ public class ChunkGenerator : MonoBehaviour
                 chunkTransform.localPosition = Vector3.zero;
             }
             else {
-                Vector2Int entryNodeLocal = chunkData.pathNodeList[0].nodePos;
+                Vector2Int entryNodeLocal = chunkData.startNode.nodePos;
                 Vector3 entryOffset = new Vector3(entryNodeLocal.x, 0f, entryNodeLocal.y);
 
                 chunkTransform.localPosition = currentAnchor - entryOffset;
@@ -143,7 +152,7 @@ public class ChunkGenerator : MonoBehaviour
 
     private void InitializeBridge(ChunkInstance chunkInstance, ChunkData chunk) {
 
-        PathNode endNode = chunk.pathNodeList[chunk.pathNodeList.Count - 1];
+        PathNode endNode = chunk.endNode;
 
         Vector3 angle = Vector3.zero;
         Vector3 spawnPos = new Vector3(endNode.nodePos.x, 0f, endNode.nodePos.y);
@@ -179,6 +188,11 @@ public class ChunkGenerator : MonoBehaviour
         for (int i = 0; i < bridgeCount; i++) {
 
             spawnPos += spawnPosPlus;
+
+            if (chunkList.IndexOf(chunkInstance) == 0) {
+
+                Debug.Log($"spawnPos = {spawnPos} & spawnPosPlus = {spawnPosPlus}");
+            }
 
             GetBridgeFromPool(chunkInstance.chunkTransform, spawnPos, angle);
             //Bridge.SpawnBridge(bridgePrefab, chunkInstance.chunkTransform, spawnPos, angle);

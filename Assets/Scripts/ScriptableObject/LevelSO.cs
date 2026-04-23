@@ -21,6 +21,8 @@ public class ChunkData {
     public int chunkHeight;
 
     [Header("Path Data")]
+    public PathNode startNode;
+    public PathNode endNode;
     public List<PathNode> pathNodeList;
 
     [Header("Bridge Data")]

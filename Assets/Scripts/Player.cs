@@ -47,7 +47,7 @@ public class Player : MonoBehaviour {
 
     private void Start() {
 
-        InputManager.Instance.OnMovedCommand += GameInput_OnMovedCommand;
+        InputManager.Instance.OnMovedCommand += InputManager_OnMovedCommand;
 
         LevelManager.Instance.OnWinState += LevelManager_OnWinState;
 
@@ -56,7 +56,7 @@ public class Player : MonoBehaviour {
 
     private void OnDestroy() {
 
-        InputManager.Instance.OnMovedCommand -= GameInput_OnMovedCommand;
+        InputManager.Instance.OnMovedCommand -= InputManager_OnMovedCommand;
 
         LevelManager.Instance.OnWinState -= LevelManager_OnWinState;
     }
@@ -68,7 +68,7 @@ public class Player : MonoBehaviour {
         ClearBrick();
     }
 
-    private void GameInput_OnMovedCommand(object sender, InputManager.OnMovedCommandEventArgs e) {
+    private void InputManager_OnMovedCommand(object sender, InputManager.OnMovedCommandEventArgs e) {
 
         if (canMove) {
             // Is is moving --> dont get new input

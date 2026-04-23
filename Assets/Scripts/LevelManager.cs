@@ -5,6 +5,13 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
+    public event EventHandler LoadNewMap;
+
+    [Header("Level Data")]
+    [SerializeField] private LevelManagerSO levelManagerSO;
+
+    private int currentLevelIndex;
+
     public enum LevelState {
         StartGame,
         GameRunning,
@@ -26,6 +33,7 @@ public class LevelManager : MonoBehaviour
 
     private void LoadLevel(int levelIndex) {
 
+        LoadNewMap?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnInit() {
