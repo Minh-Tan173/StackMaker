@@ -1,14 +1,17 @@
+using System;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    public static LevelManager Instance { get; private set; }
+
     public enum LevelState {
         StartGame,
         GameRunning,
         WinGame
     }
 
-    public static LevelManager Instance { get; private set; }
+    public event EventHandler OnWinState;
 
     private LevelState currentLevelState;
 
@@ -36,6 +39,8 @@ public class LevelManager : MonoBehaviour
     public void OnWin() {
 
         ChangeLevelStateTo(LevelState.WinGame);
+
+        OnWinState?.Invoke(this, EventArgs.Empty);
     }
 
     public LevelState GetCurrentLevelState() {

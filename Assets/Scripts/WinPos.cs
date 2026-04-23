@@ -1,9 +1,15 @@
 using System.Collections;
 using UnityEngine;
 
-public class WinPos : MonoBehaviour
-{
+public class WinPos : MonoBehaviour {
+
+    [Header("Point")]
     [SerializeField] private Transform targetPoint;
+    [SerializeField] private Transform victoryPoint;
+
+    [Header("Chest")]
+    [SerializeField] private Transform chestClosed;
+    [SerializeField] private Transform chestOpened;
 
     [Header("Partical")]
     [SerializeField] private ParticleSystem[] particleSystemArray;
@@ -12,6 +18,12 @@ public class WinPos : MonoBehaviour
 
     private void Start() {
 
+        OnInit();
+    }
+
+    private void OnInit() {
+
+        CloseChest();
         HidePartical();
     }
 
@@ -23,21 +35,26 @@ public class WinPos : MonoBehaviour
 
         if (other.CompareTag(PLAYER_TAG)) {
 
-            StartCoroutine(WiningCoroutine());
+            StartCoroutine(WiningCoroutine(other.GetComponent<Player>()));
 
         }
     }
 
-    private IEnumerator WiningCoroutine() {
-
-        ShowPartical();
+    private IEnumerator WiningCoroutine(Player player) {
 
         LevelManager.Instance.OnWin();
 
-        while (particleSystemArray[0].IsAlive()) {
+        yield return null;
+        
+        // WinPos event
+        ShowPartical();
+        OpenChest();
 
-            yield return null;
-        }
+        // Player event
+        player.transform.position = victoryPoint.position;
+        player.LookAt(chestOpened);
+
+        yield return new WaitForSeconds(5f);
 
         HidePartical();
     }
@@ -59,6 +76,18 @@ public class WinPos : MonoBehaviour
         foreach (ParticleSystem particle in particleSystemArray) {
             particle.gameObject.SetActive(false);
         }
+    }
+
+    private void OpenChest() {
+
+        chestClosed.gameObject.SetActive(false);
+        chestOpened.gameObject.SetActive(true);
+    }
+
+    private void CloseChest() {
+
+        chestClosed.gameObject.SetActive(true);
+        chestOpened.gameObject.SetActive(false);
     }
 
 }

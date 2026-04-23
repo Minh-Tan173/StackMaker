@@ -8,6 +8,7 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
     public event EventHandler StartMoving;
+    public event EventHandler ResetAnimator;
 
     [Header("Child")]
     [SerializeField] private Transform playerVisual;
@@ -24,35 +25,50 @@ public class Player : MonoBehaviour {
     [SerializeField] private float stackHeight;
     
     private Rigidbody rbPlayer;
-    private Stack<Transform> stackCollection;
+    private Stack<Transform> brickCollection;
+
+    private Vector3 playerVisualLocalPos;
 
     #region Movement Behavior
     private Vector3 moveDir;
     private Vector3 targetPos;
     private bool canMove = false;
-    private GameInput.Direct currentDirect;
+    private InputManager.Direct currentDirect;
     private Corner pendingCorner;
     #endregion
 
     private void Awake() {
 
         rbPlayer = GetComponent<Rigidbody>();
-        stackCollection = new Stack<Transform>();
+        brickCollection = new Stack<Transform>();
+
+        playerVisualLocalPos = playerVisual.localPosition;
     }
 
     private void Start() {
 
-        GameInput.Instance.OnMovedCommand += GameInput_OnMovedCommand;
+        InputManager.Instance.OnMovedCommand += GameInput_OnMovedCommand;
+
+        LevelManager.Instance.OnWinState += LevelManager_OnWinState;
 
         OnInit();
     }
 
     private void OnDestroy() {
 
-        GameInput.Instance.OnMovedCommand -= GameInput_OnMovedCommand;
+        InputManager.Instance.OnMovedCommand -= GameInput_OnMovedCommand;
+
+        LevelManager.Instance.OnWinState -= LevelManager_OnWinState;
     }
 
-    private void GameInput_OnMovedCommand(object sender, GameInput.OnMovedCommandEventArgs e) {
+    private void LevelManager_OnWinState(object sender, EventArgs e) {
+
+        canMove = false;
+
+        ClearBrick();
+    }
+
+    private void GameInput_OnMovedCommand(object sender, InputManager.OnMovedCommandEventArgs e) {
 
         if (canMove) {
             // Is is moving --> dont get new input
@@ -84,9 +100,9 @@ public class Player : MonoBehaviour {
             if (pendingCorner != null) {
                 // If having Pending Corner
 
-                GameInput.Direct nextDirect = pendingCorner.GetOtherDir(this.currentDirect);
+                InputManager.Direct nextDirect = pendingCorner.GetOtherDir(this.currentDirect);
 
-                if (nextDirect != GameInput.Direct.Default) {
+                if (nextDirect != InputManager.Direct.Default) {
                     currentDirect = nextDirect;
                     StartNewSegment(GetMoveDir(this.currentDirect));
                 }
@@ -99,13 +115,18 @@ public class Player : MonoBehaviour {
 
     private void OnInit() {
 
-        // Get Spawn Pos
+        // Setup Spawn position
         Vector2Int startPathNode = ChunkGenerator.Instance.GetLevelSO().chunkList[0].pathNodeList[0].nodePos;
         Vector3 spawnPos = ChunkGenerator.Instance.GetChunkList()[0].gridNodeDict[startPathNode].transform.position;
         Vector3 spawnPosOffset = spawnPos + Vector3.up * 0.5f;
 
-        // Set Player pos
         this.transform.position = spawnPosOffset;
+
+        // Setup playerVisual rotation
+        LookAt(null);
+
+        // Setup animator
+        ResetAnimator?.Invoke(this, EventArgs.Empty);
     }
 
     private void StartNewSegment(Vector3 moveDir) {
@@ -152,13 +173,13 @@ public class Player : MonoBehaviour {
         return new Vector3(Mathf.Round(pos.x), transform.position.y, Mathf.Round(pos.z));
     }
 
-    private Vector3 GetMoveDir(GameInput.Direct inputDir) {
+    private Vector3 GetMoveDir(InputManager.Direct inputDir) {
 
         switch (inputDir) {
-            case GameInput.Direct.Forward: return new Vector3(1, 0, 0);
-            case GameInput.Direct.Back: return new Vector3(-1, 0, 0);
-            case GameInput.Direct.Right: return new Vector3(0, 0, -1f);
-            case GameInput.Direct.Left: return new Vector3(0f, 0f, 1f);
+            case InputManager.Direct.Forward: return new Vector3(1, 0, 0);
+            case InputManager.Direct.Back: return new Vector3(-1, 0, 0);
+            case InputManager.Direct.Right: return new Vector3(0, 0, -1f);
+            case InputManager.Direct.Left: return new Vector3(0f, 0f, 1f);
 
             default: return Vector3.zero;
         }
@@ -166,7 +187,7 @@ public class Player : MonoBehaviour {
 
     private void AddBrick() {
 
-        if (stackCollection.Count > 0) {
+        if (brickCollection.Count > 0) {
             // If having stack in stackCollection ---> Up their height and player height before add new stack
 
             // Up height stack
@@ -183,24 +204,35 @@ public class Player : MonoBehaviour {
         Transform stackTransform = Instantiate(stackPrefab, stackContainer);
         stackTransform.localPosition = Vector3.zero;
 
-        stackCollection.Push(stackTransform);
+        brickCollection.Push(stackTransform);
     }
 
     private void RemoveBrick() {
 
         // Remove first stack
-        Transform bottomStack = stackCollection.Pop();
+        Transform bottomStack = brickCollection.Pop();
         Destroy(bottomStack.gameObject);
 
         //
-        foreach (Transform stack in stackCollection) {
+        foreach (Transform brick in brickCollection) {
 
-            stack.localPosition -= Vector3.up * stackHeight;
+            brick.localPosition -= Vector3.up * stackHeight;
         }
 
         //
         playerVisual.localPosition -= Vector3.up * stackHeight;
         
+    }
+
+    private void ClearBrick() {
+        
+        while (brickCollection.Count > 0) {
+
+            Transform bottomBrick = brickCollection.Pop();
+            Destroy(bottomBrick.gameObject);
+        }
+
+        playerVisual.localPosition = playerVisualLocalPos;
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -245,6 +277,23 @@ public class Player : MonoBehaviour {
                 bridge.ShowStack();
                 RemoveBrick();
             }
+        }
+    }
+
+    public void LookAt(Transform target = null) {
+
+        if (target != null) {
+
+            Vector3 targetDir = (target.position - this.transform.position).normalized;
+            targetDir.y = 0f;
+
+            playerVisual.rotation = Quaternion.LookRotation(targetDir);
+        }
+        else {
+
+            Vector3 lookAtScreenEuler = new Vector3(0f, -90f, 0f);
+
+            playerVisual.rotation = Quaternion.Euler(lookAtScreenEuler);
         }
     }
 
