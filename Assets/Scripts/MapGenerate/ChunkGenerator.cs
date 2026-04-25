@@ -5,15 +5,15 @@ public class ChunkGenerator : MonoBehaviour
 {
     public static ChunkGenerator Instance { get; private set; }
 
-    [Header("Path Data")]
-    [SerializeField] private LevelSO levelSO;
-
     [Header("Prefab")]
     [SerializeField] private Transform platformPrefab;
     [SerializeField] private Transform bridgePrefab;
 
+    #region Load Chunk
+    private LevelSO levelSO;
     private List<ChunkInstance> chunkList;
-    private List<Vector3> lastBrideNodePosPlus;
+    private List<Vector3> nextAnchorPointList;
+    #endregion
 
     #region Pooling Map
     private List<Platform> platformPool = new List<Platform>();
@@ -30,19 +30,38 @@ public class ChunkGenerator : MonoBehaviour
 
         chunkList = new List<ChunkInstance>();
 
-        lastBrideNodePosPlus = new List<Vector3>();
-
-        InitializeChunk();
-
+        nextAnchorPointList = new List<Vector3>();
     }
 
     private void Start() {
-
         LevelManager.Instance.LoadNewMap += LevelManager_LoadNewMap;
     }
 
-    private void LevelManager_LoadNewMap(object sender, System.EventArgs e) {
-        throw new System.NotImplementedException();
+    private void OnDestroy() {
+
+        LevelManager.Instance.LoadNewMap -= LevelManager_LoadNewMap;
+    }
+
+    private void LevelManager_LoadNewMap(object sender, LevelManager.LoadNewMapEventArgs e) {
+
+        this.levelSO = e.levelSO;
+
+        ClearLevelData();
+
+        OnInit();
+    }
+
+    private void OnInit() {
+
+        // Reset old data
+        activePlatformList.Clear();
+        activeBridgeList.Clear();
+
+        chunkList.Clear();
+        nextAnchorPointList.Clear();
+
+        // Init chunk
+        InitializeChunk();
     }
 
     private void InitializeChunk() {
@@ -97,7 +116,7 @@ public class ChunkGenerator : MonoBehaviour
             }
 
 
-            currentAnchor = chunkTransform.localPosition + lastBrideNodePosPlus[i];
+            currentAnchor = chunkTransform.localPosition + nextAnchorPointList[i];
         }
 
         // After Spawn chunk done --> Spawn WinPos
@@ -189,17 +208,12 @@ public class ChunkGenerator : MonoBehaviour
 
             spawnPos += spawnPosPlus;
 
-            if (chunkList.IndexOf(chunkInstance) == 0) {
-
-                Debug.Log($"spawnPos = {spawnPos} & spawnPosPlus = {spawnPosPlus}");
-            }
-
             GetBridgeFromPool(chunkInstance.chunkTransform, spawnPos, angle);
             //Bridge.SpawnBridge(bridgePrefab, chunkInstance.chunkTransform, spawnPos, angle);
         }
 
         Vector3 nextChunkPos = spawnPos + spawnPosPlus;
-        lastBrideNodePosPlus.Add(nextChunkPos);
+        nextAnchorPointList.Add(nextChunkPos);
     }
 
     private void InitializeWinPos(Vector3 finalAnchorPos) {
@@ -250,7 +264,7 @@ public class ChunkGenerator : MonoBehaviour
         }
 
         chunkList.Clear();
-        lastBrideNodePosPlus.Clear();
+        nextAnchorPointList.Clear();
 
         // Clear WinPos
         if (winPos != null) {
@@ -283,9 +297,12 @@ public class ChunkGenerator : MonoBehaviour
         else if (hasLeftPath && hasUpPath) {
             chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.LeftUp);
         }
-        else {
-            Debug.LogError("Nothing dir true");
-        }
+        //else {
+
+        //    Platform platform = this.GetComponentInParent<Platform>();
+
+        //    Debug.LogError($"Error happen at platform: {platform.gameObject.name}");
+        //}
     }
 
     private Platform GetPlatformFromPool(Transform parent, Vector3 localPos) {

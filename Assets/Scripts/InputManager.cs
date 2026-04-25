@@ -80,7 +80,7 @@ public class InputManager : MonoBehaviour
 
     private void MousePress_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 
-        if (LevelManager.Instance.GetCurrentLevelState() == LevelManager.LevelState.WinGame) { return; }
+        if (LevelManager.Instance.GetCurrentLevelState() != LevelManager.LevelState.GameRunning) { return; }
 
         realsedPos = GetMouseScreenPos();
 
@@ -96,7 +96,7 @@ public class InputManager : MonoBehaviour
 
     private void MousePress_started(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 
-        if (LevelManager.Instance.GetCurrentLevelState() == LevelManager.LevelState.WinGame) { return; }
+        if (LevelManager.Instance.GetCurrentLevelState() != LevelManager.LevelState.GameRunning) { return; }
 
         pressedPos = GetMouseScreenPos();
     }

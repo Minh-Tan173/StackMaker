@@ -47,18 +47,25 @@ public class Player : MonoBehaviour {
 
     private void Start() {
 
-        InputManager.Instance.OnMovedCommand += InputManager_OnMovedCommand;
-
         LevelManager.Instance.OnWinState += LevelManager_OnWinState;
+        LevelManager.Instance.InitObjectData += LevelManager_InitObjectData;
 
-        OnInit();
+        InputManager.Instance.OnMovedCommand += InputManager_OnMovedCommand;
     }
 
     private void OnDestroy() {
 
+        LevelManager.Instance.OnWinState -= LevelManager_OnWinState;
+        LevelManager.Instance.InitObjectData -= LevelManager_InitObjectData;
+
         InputManager.Instance.OnMovedCommand -= InputManager_OnMovedCommand;
 
-        LevelManager.Instance.OnWinState -= LevelManager_OnWinState;
+    }
+
+
+    private void LevelManager_InitObjectData(object sender, EventArgs e) {
+
+        OnInit();
     }
 
     private void LevelManager_OnWinState(object sender, EventArgs e) {
@@ -86,13 +93,12 @@ public class Player : MonoBehaviour {
         if (!canMove) {
             return;
         }
-            
-        transform.position += moveDir * moveSpeed * Time.deltaTime;
 
-
+        transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+        
         float sqrDistance = (targetPos - this.transform.position).sqrMagnitude;
 
-        if (sqrDistance <= 0.1f * 0.1f) {
+        if (Vector3.Distance(this.transform.position, targetPos) <= 0.1f) {
 
             this.transform.position = targetPos;
             canMove = false;

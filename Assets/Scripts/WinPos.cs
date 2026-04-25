@@ -54,7 +54,9 @@ public class WinPos : MonoBehaviour {
         player.transform.position = victoryPoint.position;
         player.LookAt(chestOpened);
 
-        yield return new WaitForSeconds(5f);
+        while (particleSystemArray[0].IsAlive()) {
+            yield return null;
+        }
 
         HidePartical();
     }
