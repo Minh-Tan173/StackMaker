@@ -1,8 +1,8 @@
-using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu()  ]
 public class LevelManagerSO : ScriptableObject
 {
-    public LevelSO[] levelSOArray;
+    public List<LevelSO> levelSOArray;
 }

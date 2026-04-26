@@ -55,7 +55,10 @@ public class LevelSOEditor : Editor {
 
         // Creating Grid Map
         Dictionary<Vector2Int, PathNode> nodeMap = new Dictionary<Vector2Int, PathNode>();
-        if (chunk.pathNodeList == null) chunk.pathNodeList = new List<PathNode>();
+        if (chunk.pathNodeList == null) {
+
+            chunk.pathNodeList = new List<PathNode>();
+        }
 
         foreach (var node in chunk.pathNodeList) {
 
@@ -135,22 +138,18 @@ public class LevelSOEditor : Editor {
 
         Event e = Event.current;
 
-        // 1. Đặt Start Node (Shift)
         if (e.shift) {
             chunk.startNode = new PathNode { nodePos = pos, hasCornerOn = false };
         }
-        // 2. Đặt End Node (Ctrl / Command)
         else if (e.control || e.command) {
             chunk.endNode = new PathNode { nodePos = pos, hasCornerOn = false };
         }
-        // 3. Đặt Corner (Alt)
         else if (e.alt) {
             if (isPath) {
                 var node = chunk.pathNodeList.Find(n => n.nodePos == pos);
                 node.hasCornerOn = !node.hasCornerOn;
             }
         }
-        // 4. Đặt/Xóa Path thường
         else {
             if (isPath)
                 chunk.pathNodeList.RemoveAll(n => n.nodePos == pos);
