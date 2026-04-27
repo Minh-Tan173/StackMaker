@@ -15,3 +15,4 @@ MonoBehaviour:
   levelSOArray:
   - {fileID: 11400000, guid: f950d6069c5e26e439ab24822f5af126, type: 2}
   - {fileID: 11400000, guid: dbf1d063c84630a4ea8c7ef200274929, type: 2}
+  - {fileID: 11400000, guid: 5ea7dea83634faf4d8bf95b5624e57d5, type: 2}

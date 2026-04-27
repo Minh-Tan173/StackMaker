@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class LevelEditorUI : MonoBehaviour
 {
+    public static LevelEditorUI Instance { get; private set; }
+
     [Header("Data")]
     [SerializeField] private LevelSO levelSO;
 
@@ -13,28 +15,44 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private Button resetChunkButton;
     [SerializeField] private Button nextChunkButton;
     [SerializeField] private Button backChunkButton;
+    [SerializeField] private Button addChunkButton;
+    [SerializeField] private Button deleteChunkButton;
 
     [Header("Grid Data")]
     [SerializeField] private Transform chunkGrid;
     [SerializeField] private Transform nodeButtonPrefab;
 
     [Header("Input Field Text")]
+    [SerializeField] private TMP_InputField chunkNameInputField;
     [SerializeField] private TMP_InputField widthInputField;
     [SerializeField] private TMP_InputField heightInputField;
+    [SerializeField] private TMP_InputField bridgeCountInputField;
     [SerializeField] private int minValue;
     [SerializeField] private int maxValue;
+
+    [Header("Text")]
+    [SerializeField] private TextMeshProUGUI totalPathCountText;
+    [SerializeField] private TextMeshProUGUI pathCountPerChunkText;
+
 
     private int currentChunkIndex = 0; // Mặc định khi bắt đầu là chunk index 0
 
     private List<NodeButton> nodeButtonList;
 
+    #region Path Node Info
+    private int lastCachedTotal;
+    private int lastCachedPathPerChunk;
+    private Dictionary<ChunkData, int> pathCountPerChunkDict;
+    #endregion
     private void Awake() {
+
+        Instance = this;
 
         nodeButtonList = new List<NodeButton>();
 
-        OnInit();
+        pathCountPerChunkDict = new Dictionary<ChunkData, int>();
 
-        // Button
+        // ---- BUTTON ----
         resetChunkButton.onClick.AddListener(() => {
 
             ChunkData chunkData = levelSO.chunkList[currentChunkIndex];
@@ -45,30 +63,150 @@ public class LevelEditorUI : MonoBehaviour
 
             RefreshGridVisual();
 
-        #if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(levelSO);
-            UnityEditor.AssetDatabase.SaveAssets();
-        #endif
+            UpdateLevelData();
+
+            pathCountPerChunkDict[chunkData] = chunkData.pathNodeList.Count;
         });
 
         nextChunkButton.onClick.AddListener(() => {
 
+            if (addChunkButton.gameObject.activeSelf) {
+                // Reach last chunk had in levelSO
+                return;
+            }
+
+            currentChunkIndex += 1;
+
+            ChunkData chunk = null;
+
+            if (currentChunkIndex <= levelSO.chunkList.Count - 1) {
+                // This level having this index before
+                chunk = levelSO.chunkList[currentChunkIndex];
+            }
+
+            SwitchChunk(chunk);
         });
 
         backChunkButton.onClick.AddListener(() => {
 
+            if (currentChunkIndex == 0) {
+                return;
+            }
+
+            currentChunkIndex -= 1;
+
+            ChunkData chunk = levelSO.chunkList[currentChunkIndex];
+
+            SwitchChunk(chunk);
         });
 
-        // Input Field
-        widthInputField.onEndEdit.AddListener(delegate {
+        addChunkButton.onClick.AddListener(() => {
 
-            OnSizeChunkChanged();
+            ChunkData newChunk = new ChunkData();
+
+            newChunk.chunkName = "";
+            newChunk.chunkWidth = 0;
+            newChunk.chunkHeight = 0;
+            newChunk.pathNodeList = new List<PathNode>();
+            newChunk.bridgeCount = 0;
+
+            levelSO.chunkList.Add(newChunk);
+
+            pathCountPerChunkDict.Add(newChunk, newChunk.pathNodeList.Count);
+
+            UpdateLevelData();
+            UpdateInputField(newChunk);
+
+            SwitchChunk(levelSO.chunkList[currentChunkIndex]);
         });
 
-        heightInputField.onEndEdit.AddListener(delegate {
+        deleteChunkButton.onClick.AddListener(() => {
 
-            OnSizeChunkChanged();
+            if (levelSO.chunkList.Count == 0) return;
+
+            ChunkData chunkToDelete = levelSO.chunkList[currentChunkIndex];
+            if (pathCountPerChunkDict.ContainsKey(chunkToDelete)) {
+                pathCountPerChunkDict.Remove(chunkToDelete);
+            }
+
+            levelSO.chunkList.RemoveAt(currentChunkIndex);
+
+            if (levelSO.chunkList.Count == 0) {
+
+                currentChunkIndex = 0;
+                SwitchChunk(null);
+            }
+            else {
+
+                if (currentChunkIndex >= levelSO.chunkList.Count) {
+                    currentChunkIndex = levelSO.chunkList.Count - 1;
+                }
+
+                SwitchChunk(levelSO.chunkList[currentChunkIndex]);
+            }
+
+            UpdateLevelData();
         });
+
+        // ---- INPUT FIELD ----
+        chunkNameInputField.onEndEdit.AddListener(delegate {
+
+            string chunkName = chunkNameInputField.text;
+
+            levelSO.chunkList[currentChunkIndex].chunkName = chunkName;
+
+            UpdateLevelData();
+        });
+
+        widthInputField.onEndEdit.AddListener(delegate {OnSizeChunkChanged(); });
+        heightInputField.onEndEdit.AddListener(delegate {OnSizeChunkChanged(); });
+
+        bridgeCountInputField.onEndEdit.AddListener(delegate {
+
+            ChunkData currentChunk = levelSO.chunkList[currentChunkIndex];
+            int totalPathInChunk = pathCountPerChunkDict[currentChunk];
+
+            int bridgeCount = int.Parse(bridgeCountInputField.text);
+            int clampCount = Mathf.Clamp(bridgeCount, totalPathInChunk, this.lastCachedTotal);
+            levelSO.chunkList[currentChunkIndex].bridgeCount = clampCount;
+
+            UpdateInputField(currentChunk);
+            UpdateLevelData();
+        });
+
+    }
+
+    private void Start() {
+
+        OnInit();
+    }
+
+    private void Update() {
+        
+        if (levelSO == null) { return; }
+        if (levelSO.chunkList.Count <= 0) { return; }
+
+
+        // Total Path
+        int currentTotal = GetTotalPathNodesInLevel();
+
+        if (currentTotal != lastCachedTotal) {
+
+            lastCachedTotal = currentTotal;
+            totalPathCountText.text = $"Total Path: {lastCachedTotal}";
+        }
+
+        // Path per Chunk
+        if (currentChunkIndex >= levelSO.chunkList.Count) { return; }
+
+        ChunkData currentChunk = levelSO.chunkList[currentChunkIndex];
+        int currentPathCount = pathCountPerChunkDict[currentChunk];
+
+        if (currentPathCount != lastCachedPathPerChunk) {
+
+            lastCachedPathPerChunk = currentPathCount;
+            pathCountPerChunkText.text = $"Path in Chunk: {lastCachedPathPerChunk} node";
+        }
     }
 
     private void OnInit() {
@@ -78,15 +216,21 @@ public class LevelEditorUI : MonoBehaviour
             return;
         }
 
+        // Init Dict to counting pathNode count per chunk
+        pathCountPerChunkDict.Clear();
+        foreach (ChunkData chunk in levelSO.chunkList) {
+            if (!pathCountPerChunkDict.ContainsKey(chunk)) {
+
+                pathCountPerChunkDict.Add(chunk, chunk.pathNodeList.Count);
+            }
+        }
+
         ChunkData chunk0 = levelSO.chunkList[currentChunkIndex];
 
-        ClearChunkGrid(chunk0);
-        InitializeChunkGrid(chunk0);
-
-        UpdateInputField(chunk0);
+        SwitchChunk(chunk0);
     }
 
-    private void ClearChunkGrid(ChunkData chunk) {
+    private void ClearChunkGrid() {
 
         foreach (NodeButton nodeButton in nodeButtonList) {
 
@@ -94,6 +238,15 @@ public class LevelEditorUI : MonoBehaviour
         }
 
         nodeButtonList.Clear();
+    }
+    
+    private void ClearInputField() {
+
+        bridgeCountInputField.text = "";
+        heightInputField.text = "";
+        widthInputField.text = "";
+        chunkNameInputField.text = "";
+
     }
 
     private void InitializeChunkGrid(ChunkData chunk) {
@@ -157,7 +310,7 @@ public class LevelEditorUI : MonoBehaviour
         PathNode currentNode = GetPathNodeAt(chunk, nodePos);
 
         if (is1) {
-            // SET PATH
+            // ---- SET PATH ----
 
             if (currentNode == null) {
                 // If this node is not Path
@@ -165,10 +318,13 @@ public class LevelEditorUI : MonoBehaviour
                 PathNode newNode = new PathNode { nodePos = nodePos, hasCornerOn = false };
                 chunk.pathNodeList.Add(newNode);
                 hasChanged = true;
+
+                // Update pathNode count
+                pathCountPerChunkDict[chunk] = chunk.pathNodeList.Count;
             }
         }
         else if (is2) {
-            // SET/UNSET CORNER
+            // ---- SET/UNSET CORNER ----
 
             if (currentNode != null) {
                 // If this node is Path before
@@ -176,9 +332,10 @@ public class LevelEditorUI : MonoBehaviour
                 currentNode.hasCornerOn = !currentNode.hasCornerOn;
                 hasChanged = true;
             }
+
         }
         else if (is3) {
-            // SET/UNSET STARTNODE
+            // ---- SET/UNSET STARTNODE ----
 
             if (currentNode != null) {
                 // If this node is Path before
@@ -188,7 +345,7 @@ public class LevelEditorUI : MonoBehaviour
             }
         }
         else if (is4) {
-            // SET/UNSET ENDNODE
+            // ---- SET/UNSET ENDNODE ----
 
             if (currentNode != null) {
                 // If this node is Path before
@@ -198,12 +355,15 @@ public class LevelEditorUI : MonoBehaviour
             }
         }
         else if (isLeftShift) {
-            // REMOVE PATH NODE
+            // ---- REMOVE PATH NODE ----
 
             if (currentNode != null) {
 
                 chunk.pathNodeList.Remove(currentNode);
-                
+
+                // Update pathNode count
+                pathCountPerChunkDict[chunk] = chunk.pathNodeList.Count;
+
                 if (chunk.startNode.nodePos == nodePos) {
                     // If this node is startNode --> Reset startNode
 
@@ -224,10 +384,7 @@ public class LevelEditorUI : MonoBehaviour
 
             RefreshGridVisual();
 
-        #if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(levelSO);
-            UnityEditor.AssetDatabase.SaveAssets();
-        #endif
+            UpdateLevelData();
         }
     }
 
@@ -242,12 +399,12 @@ public class LevelEditorUI : MonoBehaviour
     }
 
     private PathNode GetPathNodeAt(ChunkData chunk, Vector2Int pos) {
+
         foreach (PathNode node in chunk.pathNodeList) {
             if (node.nodePos == pos) return node;
         }
         return null;
     }
-
 
     private void OnSizeChunkChanged() {
 
@@ -265,11 +422,31 @@ public class LevelEditorUI : MonoBehaviour
         currentChunk.chunkWidth = width;
         currentChunk.chunkHeight = height;
 
-        // Update size in Editor Scene
-        ClearChunkGrid(currentChunk);
-        InitializeChunkGrid(currentChunk);
+        // Update PathNodeDict
+        pathCountPerChunkDict[currentChunk] = currentChunk.pathNodeList.Count;
 
-        UpdateInputField(currentChunk);
+        // Update size in Editor Scene
+        SwitchChunk(currentChunk);
+    }
+
+    private void SwitchChunk(ChunkData chunk = null) {
+
+        if (chunk != null) {
+
+            HideAddChunk();
+
+            ClearChunkGrid();
+            InitializeChunkGrid(chunk);
+
+            UpdateInputField(chunk);
+        }
+        else {
+
+            ClearChunkGrid();
+            ClearInputField();
+
+            ShowAddChunk();
+        }
     }
 
     private int ValidateInput(int input) {
@@ -279,12 +456,23 @@ public class LevelEditorUI : MonoBehaviour
 
     private void UpdateInputField(ChunkData chunk) {
 
+        // Update Chunk Name Text
+        if (chunk.chunkName != "") {
+
+            chunkNameInputField.text = $"{chunk.chunkName}";
+        }
+        else {
+            chunkNameInputField.text = "";
+            chunkNameInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter Name...";
+        }        
+
         // Update Width Text
         if (chunk.chunkWidth != 0) {
 
             widthInputField.text = ValidateInput(chunk.chunkWidth).ToString();
         }
         else {
+            widthInputField.text = "";
             widthInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter Width...";
         }
 
@@ -294,9 +482,52 @@ public class LevelEditorUI : MonoBehaviour
             heightInputField.text = chunk.chunkHeight.ToString();
         }
         else {
+            heightInputField.text = "";
             heightInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter Height...";
         }
         
+        // Update Bridge Count Text
+        if (chunk.bridgeCount != 0) {
+
+            bridgeCountInputField.text = $"{chunk.bridgeCount}";
+        }
+        else {
+            bridgeCountInputField.text = "";
+            bridgeCountInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter...";
+        }
     }
 
+    private int GetTotalPathNodesInLevel() {
+        int total = 0;
+
+        foreach (ChunkData chunk in levelSO.chunkList) {
+
+            if (chunk.pathNodeList != null) {
+
+                total += chunk.pathNodeList.Count;
+            }
+        }
+
+        return total;
+    }
+
+    private void ShowAddChunk() {
+        
+        addChunkButton.gameObject.SetActive(true);
+        deleteChunkButton.gameObject.SetActive(false);
+    }
+
+    private void HideAddChunk() {
+
+        addChunkButton.gameObject.SetActive(false);
+        deleteChunkButton.gameObject.SetActive(true);
+    }
+
+    private void UpdateLevelData() {
+
+    #if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(levelSO);
+        //UnityEditor.AssetDatabase.SaveAssets(); 
+    #endif
+    }
 }

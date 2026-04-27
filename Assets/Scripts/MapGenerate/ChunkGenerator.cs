@@ -226,6 +226,9 @@ public class ChunkGenerator : MonoBehaviour
             Transform winPosTransform = Instantiate(levelSO.winPosPrefab, this.transform);
             winPos = winPosTransform.GetComponent<WinPos>();
         }
+        else {
+            winPos.gameObject.SetActive(true);
+        }
 
 
         // Gắn với điểm neo cuối cùng (Local Space)
