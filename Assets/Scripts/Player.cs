@@ -65,6 +65,8 @@ public class Player : MonoBehaviour {
 
     private void LevelManager_InitObjectData(object sender, EventArgs e) {
 
+        ClearBrick();
+
         OnInit();
     }
 

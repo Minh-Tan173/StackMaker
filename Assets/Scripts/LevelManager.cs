@@ -6,16 +6,10 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
-    public event EventHandler<LoadNewMapEventArgs> LoadNewMap;
-    public class LoadNewMapEventArgs : EventArgs {
-        public LevelSO levelSO;
-    }
-    public event EventHandler InitObjectData;
-
-    [Header("Level Data")]
-    [SerializeField] private LevelManagerSO levelManagerSO;
-
-    private int currentLevelIndex;
+    public enum SceneType {
+        GameScene,
+        EditorScene
+    };
 
     public enum LevelState {
         StartGame,
@@ -24,8 +18,21 @@ public class LevelManager : MonoBehaviour
     }
 
     public event EventHandler OnWinState;
+    public event EventHandler<LoadNewMapEventArgs> LoadNewMap;
+    public class LoadNewMapEventArgs : EventArgs {
+        public LevelSO levelSO;
+    }
+    public event EventHandler InitObjectData;
 
+    [Header("Scene Type")]
+    [SerializeField] private SceneType sceneType;
+
+    [Header("Level Data")]
+    [SerializeField] private LevelManagerSO levelManagerSO;
+
+    private int currentLevelIndex;
     private LevelState currentLevelState;
+
 
     private void Awake() {
 
@@ -74,7 +81,7 @@ public class LevelManager : MonoBehaviour
         this.currentLevelState = levelState;
     }
 
-    private void OnInit() {
+    public void OnInit() {
 
         ChangeLevelStateTo(LevelState.StartGame);
 
@@ -90,7 +97,12 @@ public class LevelManager : MonoBehaviour
 
         this.currentLevelIndex = levelIndex;
 
-        LoadNewMap?.Invoke(this, new LoadNewMapEventArgs { levelSO = levelManagerSO.levelSOArray[this.currentLevelIndex] });
+        LoadNewMap?.Invoke(this, new LoadNewMapEventArgs { levelSO = levelManagerSO.levelSOList[this.currentLevelIndex] });
+    }
+
+    public void LoadLevel(LevelSO levelSO) {
+
+        LoadNewMap?.Invoke(this, new LoadNewMapEventArgs { levelSO = levelSO });
     }
 
     public void OnPlay() {
@@ -99,6 +111,14 @@ public class LevelManager : MonoBehaviour
     }
 
     public void OnWin() {
+
+        if (IsEditorScene()) {
+
+            ChangeLevelStateTo(LevelState.WinGame);
+            OnWinState?.Invoke(this, EventArgs.Empty);
+
+            return;
+        }
 
         StartCoroutine(WinningCoroutine());
     }
@@ -114,6 +134,10 @@ public class LevelManager : MonoBehaviour
 
     public LevelState GetCurrentLevelState() {
         return this.currentLevelState;
+    }
+
+    public bool IsEditorScene() {
+        return this.sceneType == SceneType.EditorScene;
     }
 
     public int GetCurrentLevelIndex() {

@@ -17,6 +17,8 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private Button backChunkButton;
     [SerializeField] private Button addChunkButton;
     [SerializeField] private Button deleteChunkButton;
+    [SerializeField] private Button gameModeButton;
+    [SerializeField] private Button closeButton;
 
     [Header("Grid Data")]
     [SerializeField] private Transform chunkGrid;
@@ -44,6 +46,7 @@ public class LevelEditorUI : MonoBehaviour
     private int lastCachedPathPerChunk;
     private Dictionary<ChunkData, int> pathCountPerChunkDict;
     #endregion
+
     private void Awake() {
 
         Instance = this;
@@ -52,7 +55,7 @@ public class LevelEditorUI : MonoBehaviour
 
         pathCountPerChunkDict = new Dictionary<ChunkData, int>();
 
-        // ---- BUTTON ----
+        #region Button Listener
         resetChunkButton.onClick.AddListener(() => {
 
             ChunkData chunkData = levelSO.chunkList[currentChunkIndex];
@@ -148,7 +151,21 @@ public class LevelEditorUI : MonoBehaviour
             UpdateLevelData();
         });
 
-        // ---- INPUT FIELD ----
+        gameModeButton.onClick.AddListener(() => {
+
+            LevelManager.Instance.LoadLevel(levelSO);
+            LevelManager.Instance.OnInit();
+            LevelManager.Instance.OnPlay();
+
+            Hide();
+        });
+
+        closeButton.onClick.AddListener(() => {
+
+        });
+        #endregion
+
+        #region Input Field Listener
         chunkNameInputField.onEndEdit.AddListener(delegate {
 
             string chunkName = chunkNameInputField.text;
@@ -173,7 +190,7 @@ public class LevelEditorUI : MonoBehaviour
             UpdateInputField(currentChunk);
             UpdateLevelData();
         });
-
+        #endregion
     }
 
     private void Start() {
@@ -511,6 +528,14 @@ public class LevelEditorUI : MonoBehaviour
         return total;
     }
 
+    private void Show() {
+        this.gameObject.SetActive(true);
+    }
+
+    private void Hide() {
+        this.gameObject.SetActive(false);
+    }
+
     private void ShowAddChunk() {
         
         addChunkButton.gameObject.SetActive(true);
@@ -529,5 +554,9 @@ public class LevelEditorUI : MonoBehaviour
         UnityEditor.EditorUtility.SetDirty(levelSO);
         //UnityEditor.AssetDatabase.SaveAssets(); 
     #endif
+    }
+
+    public bool IsShow() {
+        return this.gameObject.activeSelf;
     }
 }

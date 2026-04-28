@@ -50,7 +50,7 @@ MonoBehaviour:
       hasCornerOn: 0
     - nodePos: {x: 2, y: 5}
       hasCornerOn: 0
-    bridgeCount: 15
+    bridgeCount: 13
   - chunkName: Chunk_2
     chunkWidth: 8
     chunkHeight: 11

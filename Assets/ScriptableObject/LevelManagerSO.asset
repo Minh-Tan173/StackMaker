@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71135f83cabe55a4d9eb2ecd17bfab03, type: 3}
   m_Name: LevelManagerSO
   m_EditorClassIdentifier: Assembly-CSharp::LevelManagerSO
-  levelSOArray:
+  levelSOList:
   - {fileID: 11400000, guid: f950d6069c5e26e439ab24822f5af126, type: 2}
   - {fileID: 11400000, guid: dbf1d063c84630a4ea8c7ef200274929, type: 2}
   - {fileID: 11400000, guid: 5ea7dea83634faf4d8bf95b5624e57d5, type: 2}
