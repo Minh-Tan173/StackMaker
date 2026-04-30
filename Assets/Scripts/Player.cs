@@ -31,16 +31,22 @@ public class Player : MonoBehaviour {
 
     #region Movement Behavior
     private Vector3 moveDir;
+    private Vector3 startPos;
     private Vector3 targetPos;
     private bool canMove = false;
+    private bool canInteract = false;
+    private bool isTurnBack = false;
     private InputManager.Direct currentDirect;
     private Corner pendingCorner;
+    private List<Bridge> bridgeList;
     #endregion
 
     private void Awake() {
 
         rbPlayer = GetComponent<Rigidbody>();
         brickCollection = new Stack<Transform>();
+
+        bridgeList = new List<Bridge>();
 
         playerVisualLocalPos = playerVisual.localPosition;
     }
@@ -49,6 +55,7 @@ public class Player : MonoBehaviour {
 
         LevelManager.Instance.OnWinState += LevelManager_OnWinState;
         LevelManager.Instance.InitObjectData += LevelManager_InitObjectData;
+        LevelManager.Instance.ClearObjectData += LevelManager_ClearObjectData;
 
         InputManager.Instance.OnMovedCommand += InputManager_OnMovedCommand;
     }
@@ -57,11 +64,23 @@ public class Player : MonoBehaviour {
 
         LevelManager.Instance.OnWinState -= LevelManager_OnWinState;
         LevelManager.Instance.InitObjectData -= LevelManager_InitObjectData;
+        LevelManager.Instance.ClearObjectData -= LevelManager_ClearObjectData;
 
         InputManager.Instance.OnMovedCommand -= InputManager_OnMovedCommand;
 
     }
 
+    private void LevelManager_ClearObjectData(object sender, EventArgs e) {
+
+        ClearBrick();
+
+        canMove = false;
+        canInteract = true;
+        isTurnBack = false;
+
+        brickCollection.Clear();
+        bridgeList.Clear();
+    }
 
     private void LevelManager_InitObjectData(object sender, EventArgs e) {
 
@@ -100,7 +119,7 @@ public class Player : MonoBehaviour {
         
         float sqrDistance = (targetPos - this.transform.position).sqrMagnitude;
 
-        if (Vector3.Distance(this.transform.position, targetPos) <= 0.1f) {
+        if (sqrDistance <= 0.1f * 0.1f) {
 
             this.transform.position = targetPos;
             canMove = false;
@@ -116,6 +135,12 @@ public class Player : MonoBehaviour {
                 }
 
                 pendingCorner = null;
+            }
+
+            if (isTurnBack) {
+                // Was turn back from Bridge
+
+                isTurnBack = false;
             }
         }
        
@@ -135,9 +160,26 @@ public class Player : MonoBehaviour {
 
         // Setup animator
         ResetAnimator?.Invoke(this, EventArgs.Empty);
+
+        // Reset Interact behavior
+        canInteract = true;
+    }
+
+    private void OnDespawn() {
+
+        ClearBrick();
+
+        canMove = false;
+        canInteract = false;
+        isTurnBack = false;
+
+        brickCollection.Clear();
+        bridgeList.Clear();
     }
 
     private void StartNewSegment(Vector3 moveDir) {
+
+        bridgeList.Clear(); // Clear bridgeList beform new Movement Progress
 
         this.moveDir = moveDir;
 
@@ -150,7 +192,11 @@ public class Player : MonoBehaviour {
             
             for (int i = 0; i < sortedHit.Count; i++) {
 
-                if (sortedHit[i].collider.TryGetComponent<WinPos>(out WinPos winPos)) {
+                // Handle if find WinPos 
+                WinPos winPos = sortedHit[i].collider.GetComponent<WinPos>();
+                if (winPos != null) {
+
+                    startPos = this.transform.position;
 
                     targetPos = winPos.GetTargetPoint().position;
                     canMove = true;
@@ -158,12 +204,15 @@ public class Player : MonoBehaviour {
                     break;
                 }
 
-                if (sortedHit[i].collider.TryGetComponent<Platform>(out Platform platform)) {
+                // Handle if find Floor
+                Platform platform = sortedHit[i].collider.GetComponent<Platform>();
+                if (platform != null) {
 
-                    // Find nearest Floor Node
                     if (platform.GetNodeID() == GridNode.NodeID.Wall) {
 
                         if (i == 0) { break; } // Đối diện moveDir là floor
+
+                        startPos = this.transform.position;
 
                         targetPos = SnapToGrid(sortedHit[i - 1].transform.position);
                         canMove = true;
@@ -172,6 +221,12 @@ public class Player : MonoBehaviour {
 
                         break;
                     }
+                }
+
+                Bridge bridge = sortedHit[i].collider.GetComponent<Bridge>();
+                if (bridge != null) {
+
+                    bridgeList.Add(bridge);
                 }
             }
         }
@@ -195,18 +250,14 @@ public class Player : MonoBehaviour {
 
     private void AddBrick() {
 
-        if (brickCollection.Count > 0) {
-            // If having stack in stackCollection ---> Up their height and player height before add new stack
+        // Up height stack
+        foreach (Transform stack in stackContainer) {
 
-            // Up height stack
-            foreach (Transform stack in stackContainer) {
-
-                stack.localPosition += Vector3.up * stackHeight;
-            }
-
-            // Up height Player
-            playerVisual.localPosition += Vector3.up * stackHeight;
+            stack.localPosition += Vector3.up * stackHeight;
         }
+
+        // Up height Player
+        playerVisual.localPosition += Vector3.up * stackHeight;
 
         // Spawn new stack
         Transform stackTransform = Instantiate(stackPrefab, stackContainer);
@@ -245,6 +296,7 @@ public class Player : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other) {
 
+        if (!canInteract) { return; }
 
         if (other.CompareTag(GameTag.PLATFORM_TAG)) {
 
@@ -280,11 +332,60 @@ public class Player : MonoBehaviour {
                 return;
             }
 
-            if (!bridge.IsOnStackVisual()) {
+            if (!isTurnBack) {
 
-                bridge.ShowStack();
-                RemoveBrick();
+                if (!bridge.IsOnStackVisual()) {
+
+                    bridge.ShowStack();
+                    RemoveBrick();
+                }
+
+                float xSizeBridge = bridge.GetComponent<BoxCollider>().size.x;
+                float maxDistance = xSizeBridge + 0.3f;
+
+                int currentBridgeIndex = bridgeList.IndexOf(bridge);
+                
+                if (currentBridgeIndex < bridgeList.Count - 1) {
+                    // If current index is not last index of bridgeList --> Đang đi trên Bridge
+
+                    if (brickCollection.Count == 0) {
+                        // Đang đi trên cầu mà hết Brick --> Quay về
+
+                        isTurnBack = true;
+                        moveDir = -moveDir;
+
+                        targetPos = startPos;
+
+                        // Hoàn trả lại brick vừa remove ở trên Bridge này
+                        bridge.HideStack();
+                        AddBrick();
+
+                        // Player hasn't fully left the previous bridge due to collider overlap
+                        if (currentBridgeIndex > 0) {
+                            
+                            Bridge bridgeBefore = bridgeList[currentBridgeIndex - 1];
+
+                            if (bridgeBefore.IsOnStackVisual()) {
+
+                                bridgeBefore.HideStack();
+                                AddBrick();
+                            }
+                        }
+
+                        canMove = true;
+                    }
+                }
             }
+            else {
+                // Đang quay ngược về
+
+                if (bridge.IsOnStackVisual()) {
+
+                    bridge.HideStack();
+                    AddBrick();
+                }
+            }
+            
         }
     }
 

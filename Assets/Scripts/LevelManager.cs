@@ -23,6 +23,9 @@ public class LevelManager : MonoBehaviour
         public LevelSO levelSO;
     }
     public event EventHandler InitObjectData;
+    public event EventHandler ClearObjectData;
+    public event EventHandler OnGameSetting;
+    public event EventHandler OffGameSetting;
 
     [Header("Scene Type")]
     [SerializeField] private SceneType sceneType;
@@ -30,18 +33,23 @@ public class LevelManager : MonoBehaviour
     [Header("Level Data")]
     [SerializeField] private LevelManagerSO levelManagerSO;
 
+    private const string CURRENT_LEVEL_KEY = "Current_Level";
+
     private int currentLevelIndex;
     private LevelState currentLevelState;
 
+    private bool isToggleSettingUI = false;
 
     private void Awake() {
 
         Instance = this;
+
+        this.currentLevelIndex = PlayerPrefs.GetInt(CURRENT_LEVEL_KEY, 0);
     }
 
     private void Start() {
 
-        LoadLevel(0);
+        LoadLevel(this.currentLevelIndex);
         OnInit();
     }
 
@@ -62,7 +70,12 @@ public class LevelManager : MonoBehaviour
         }
 
         // After CloseTranstion - Reset Data and Prepared Data for next level
-        LoadLevel(this.currentLevelIndex += 1);
+
+        this.currentLevelIndex += 1;
+        PlayerPrefs.SetInt(CURRENT_LEVEL_KEY, currentLevelIndex);
+        PlayerPrefs.Save();
+
+        LoadLevel(currentLevelIndex);
         OnInit();
 
         yield return new WaitForSeconds(0.3f);
@@ -75,6 +88,33 @@ public class LevelManager : MonoBehaviour
         }
 
         OnPlay();
+    }
+
+    private IEnumerator RetryCoroutine(Action actionCallBack) {
+
+        OnDespawn();
+
+        // Start CloseTransition
+        Transition.Instance.CloseTransition();
+
+        while (Transition.Instance.IsRunningCoroutine()) {
+            yield return null;
+        }
+
+        // After CloseTransition
+        LoadLevel(this.currentLevelIndex);
+        OnInit();
+
+        yield return new WaitForSeconds(0.3f);
+
+        // Start OpenTransition
+        Transition.Instance.OpenTransition();
+
+        while (Transition.Instance.IsRunningCoroutine()) {
+            yield return null;
+        }
+
+        actionCallBack?.Invoke();
     }
 
     private void ChangeLevelStateTo(LevelState levelState) {
@@ -91,6 +131,7 @@ public class LevelManager : MonoBehaviour
 
     private void OnDespawn() {
 
+        ClearObjectData?.Invoke(this, EventArgs.Empty);
     }
 
     public void LoadLevel(int levelIndex) {
@@ -112,6 +153,7 @@ public class LevelManager : MonoBehaviour
 
     public void OnWin() {
 
+        // Happen in Editor Scene
         if (IsEditorScene()) {
 
             ChangeLevelStateTo(LevelState.WinGame);
@@ -120,16 +162,20 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
-        StartCoroutine(WinningCoroutine());
+        if (currentLevelIndex >= levelManagerSO.levelSOList.Count - 1) {
+            // Reached last Index
+
+            // Todo: Show WinUI
+        }
+        else {
+
+            StartCoroutine(WinningCoroutine());
+        }
     }
 
-    public void OnRetry() {
+    public void OnRetry(Action actionCallBack) {
 
-        OnDespawn();
-
-        LoadLevel(this.currentLevelIndex);
-
-        OnInit();
+        StartCoroutine(RetryCoroutine(actionCallBack));
     }
 
     public LevelState GetCurrentLevelState() {
@@ -142,5 +188,21 @@ public class LevelManager : MonoBehaviour
 
     public int GetCurrentLevelIndex() {
         return this.currentLevelIndex;
+    }
+
+    public void ToggleGameSetting() {
+
+        isToggleSettingUI = !isToggleSettingUI;
+
+        if (isToggleSettingUI) {
+
+            Time.timeScale = 0f;
+            OnGameSetting?.Invoke(this, EventArgs.Empty);
+        }
+        else {
+
+            Time.timeScale = 1f;
+            OffGameSetting?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

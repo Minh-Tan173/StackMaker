@@ -4,11 +4,14 @@ using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
 {
+    public static MainMenuUI Instance { get; private set; }
 
     [Header("Button")]
     [SerializeField] private Button startButton;
 
     private void Awake() {
+
+        Instance = this;
 
         startButton.onClick.AddListener(() => {
 
@@ -21,16 +24,15 @@ public class MainMenuUI : MonoBehaviour
 
     private void Start() {
 
-
         // When start game 
         Show();
     }
 
-    private void Show() {
+    public void Show() {
         this.gameObject.SetActive(true);
     }
 
-    private void Hide() {
+    public void Hide() {
         this.gameObject.SetActive(false);
     }
 }
