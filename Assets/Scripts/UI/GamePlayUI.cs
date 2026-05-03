@@ -21,9 +21,7 @@ public class GamePlayUI : MonoBehaviour
 
             LevelManager.Instance.ToggleGameSetting();
         });
-    }
 
-    private void Start() {
         LevelManager.Instance.InitObjectData += LevelManager_InitObjectData;
     }
 

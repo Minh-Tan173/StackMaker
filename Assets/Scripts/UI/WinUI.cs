@@ -1,83 +1,77 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingUI : MonoBehaviour
+public class WinUI : MonoBehaviour
 {
-    public static SettingUI Instance { get; private set; }
+    [Header("Text")]
+    [SerializeField] private TextMeshProUGUI winNotiText;
 
     [Header("Button")]
-    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private Button nextLevelButton;
     [SerializeField] private Button retryButton;
-    [SerializeField] private Button closeButton;
+    [SerializeField] private Button mainMenuButton;
 
     [Header("Pos")]
     [SerializeField] private Vector3 startPos;
     [SerializeField] private Vector3 endPos;
 
     private RectTransform rectTransform;
-    private bool isRunningCoroutine = false;
 
     private void Awake() {
 
-        Instance = this;
-
         rectTransform = GetComponent<RectTransform>();
 
-        mainMenuButton.onClick.AddListener(() => {
+        nextLevelButton.onClick.AddListener(() => {
 
-            LevelManager.Instance.OnRetry(actionCallBack: MainMenuUI.Instance.Show);
-            LevelManager.Instance.ToggleGameSetting();
+            LevelManager.Instance.OnWin(isShowWinUI: true);
 
+            OnDespawn();
+            StartCoroutine(HideCoroutine(null));
         });
 
         retryButton.onClick.AddListener(() => {
 
-            LevelManager.Instance.OnRetry(actionCallBack: LevelManager.Instance.OnPlay);
-            LevelManager.Instance.ToggleGameSetting();
+            StartCoroutine(HideCoroutine(() => {
+
+                LevelManager.Instance.OnRetry(actionCallBack: LevelManager.Instance.OnPlay);
+            }));
+
         });
 
-        closeButton.onClick.AddListener(() => {
+        mainMenuButton.onClick.AddListener(() => {
 
-            LevelManager.Instance.ToggleGameSetting();
+            StartCoroutine(HideCoroutine(() => {
+
+                LevelManager.Instance.OnRetry(actionCallBack: MainMenuUI.Instance.Show);
+            }));
         });
     }
 
     private void Start() {
 
-        LevelManager.Instance.OnGameSetting += LevelManager_OnGameSetting;
-        LevelManager.Instance.OffGameSetting += LevelManager_OffGameSetting;
+        LevelManager.Instance.OnWinUI += LevelManager_OnWinUI;
 
         OnInit();
     }
 
     private void OnDestroy() {
-
-        LevelManager.Instance.OnGameSetting -= LevelManager_OnGameSetting;
-        LevelManager.Instance.OffGameSetting -= LevelManager_OffGameSetting;
+        LevelManager.Instance.OnWinUI -= LevelManager_OnWinUI;
     }
 
-    private void LevelManager_OffGameSetting(object sender, System.EventArgs e) {
-
-        OnDespawn();
-
-        StartCoroutine(HideCoroutine());
-    }
-
-    private void LevelManager_OnGameSetting(object sender, System.EventArgs e) {
+    private void LevelManager_OnWinUI(object sender, System.EventArgs e) {
 
         Show();
-
         StartCoroutine(ShowCoroutine());
-
     }
 
     private IEnumerator ShowCoroutine() {
 
-        isRunningCoroutine = true;
-
         float elapsed = 0f;
-        float duration = 0.2f;
+        float duration = 0.5f;
 
         rectTransform.anchoredPosition = startPos;
 
@@ -93,13 +87,9 @@ public class SettingUI : MonoBehaviour
         }
 
         rectTransform.anchoredPosition = endPos;
-
-        isRunningCoroutine = false;
     }
 
-    private IEnumerator HideCoroutine() {
-
-        isRunningCoroutine = true;
+    private IEnumerator HideCoroutine(Action actionCallBack) {
 
         float elapsed = 0f;
         float duration = 0.2f;
@@ -119,7 +109,7 @@ public class SettingUI : MonoBehaviour
 
         rectTransform.anchoredPosition = startPos;
 
-        isRunningCoroutine = false;
+        actionCallBack?.Invoke();
 
         Hide();
     }
@@ -127,23 +117,45 @@ public class SettingUI : MonoBehaviour
     private void OnInit() {
 
         rectTransform.anchoredPosition = startPos;
-        Hide(); 
-       
+        Hide();
+
+        int currentLevelIndex = LevelManager.Instance.GetCurrentLevelIndex();
+
+        // Update Text
+        int currentLevel = currentLevelIndex + 1;
+        winNotiText.text = $"Win Level {currentLevel}";
+
+        // Setup NextLevelButton
+        int lastLevelIndex = LevelManager.Instance.GetLevelManagerSO().levelSOList.Count - 1;
+        if (currentLevelIndex < lastLevelIndex) {
+
+            ShowNextLevelButton();
+        }
+        else {
+            HideNextLevelButton();
+        }
     }
 
     private void OnDespawn() {
         retryButton.GetComponent<Animator>().Rebind();
+        nextLevelButton.GetComponent<Animator>().Rebind();
         mainMenuButton.GetComponent<Animator>().Rebind();
     }
 
     private void Show() {
-
         this.gameObject.SetActive(true);
     }
 
     private void Hide() {
-
         this.gameObject.SetActive(false);
+    }
+
+    private void ShowNextLevelButton() {
+        this.gameObject.SetActive(true);
+    }
+
+    private void HideNextLevelButton() {
+        nextLevelButton.gameObject.SetActive(false);
     }
 
     private float EaseOutBack(float t) {
@@ -158,9 +170,5 @@ public class SettingUI : MonoBehaviour
         float c3 = c1 + 1f;
 
         return c3 * t * t * t - c1 * t * t;
-    }
-
-    public bool IsRunningCoroutine() {
-        return this.isRunningCoroutine;
     }
 }

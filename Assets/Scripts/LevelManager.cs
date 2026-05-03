@@ -26,6 +26,7 @@ public class LevelManager : MonoBehaviour
     public event EventHandler ClearObjectData;
     public event EventHandler OnGameSetting;
     public event EventHandler OffGameSetting;
+    public event EventHandler OnWinUI;
 
     [Header("Scene Type")]
     [SerializeField] private SceneType sceneType;
@@ -54,10 +55,6 @@ public class LevelManager : MonoBehaviour
     }
 
     private IEnumerator WinningCoroutine() {
-
-        ChangeLevelStateTo(LevelState.WinGame);
-
-        OnWinState?.Invoke(this, EventArgs.Empty);
 
         float nextLevelTimer = 4f;
         yield return new WaitForSeconds(nextLevelTimer);
@@ -151,21 +148,20 @@ public class LevelManager : MonoBehaviour
         ChangeLevelStateTo(LevelState.GameRunning);
     }
 
-    public void OnWin() {
+    public void OnWin(bool isShowWinUI = false) {
 
-        // Happen in Editor Scene
-        if (IsEditorScene()) {
+        if (currentLevelState != LevelState.WinGame) {
 
             ChangeLevelStateTo(LevelState.WinGame);
             OnWinState?.Invoke(this, EventArgs.Empty);
-
-            return;
         }
 
-        if (currentLevelIndex >= levelManagerSO.levelSOList.Count - 1) {
-            // Reached last Index
+        // If in Editor Scene
+        if (IsEditorScene()) { return; }
 
-            // Todo: Show WinUI
+        if (!isShowWinUI) {
+
+            OnWinUI?.Invoke(this, EventArgs.Empty);
         }
         else {
 
@@ -188,6 +184,10 @@ public class LevelManager : MonoBehaviour
 
     public int GetCurrentLevelIndex() {
         return this.currentLevelIndex;
+    }
+
+    public LevelManagerSO GetLevelManagerSO() {
+        return this.levelManagerSO;
     }
 
     public void ToggleGameSetting() {

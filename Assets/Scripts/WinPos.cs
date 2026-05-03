@@ -42,7 +42,7 @@ public class WinPos : MonoBehaviour {
 
     private IEnumerator WiningCoroutine(Player player) {
 
-        LevelManager.Instance.OnWin();
+        LevelManager.Instance.OnWin(isShowWinUI: false);
 
         yield return null;
         
