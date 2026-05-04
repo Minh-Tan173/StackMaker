@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -117,7 +116,6 @@ public class WinUI : MonoBehaviour
     private void OnInit() {
 
         rectTransform.anchoredPosition = startPos;
-        Hide();
 
         int currentLevelIndex = LevelManager.Instance.GetCurrentLevelIndex();
 
@@ -134,6 +132,8 @@ public class WinUI : MonoBehaviour
         else {
             HideNextLevelButton();
         }
+
+        Hide();
     }
 
     private void OnDespawn() {
@@ -151,7 +151,7 @@ public class WinUI : MonoBehaviour
     }
 
     private void ShowNextLevelButton() {
-        this.gameObject.SetActive(true);
+        nextLevelButton.gameObject.SetActive(true);
     }
 
     private void HideNextLevelButton() {

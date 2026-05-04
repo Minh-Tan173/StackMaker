@@ -45,10 +45,16 @@ public class LevelManager : MonoBehaviour
 
         Instance = this;
 
+        //// Testing 
+        //PlayerPrefs.SetInt(CURRENT_LEVEL_KEY, 0);
+        //PlayerPrefs.Save();
+
         this.currentLevelIndex = PlayerPrefs.GetInt(CURRENT_LEVEL_KEY, 0);
     }
 
     private void Start() {
+
+
 
         LoadLevel(this.currentLevelIndex);
         OnInit();
@@ -56,7 +62,7 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator WinningCoroutine() {
 
-        float nextLevelTimer = 4f;
+        float nextLevelTimer = 1.5f;
         yield return new WaitForSeconds(nextLevelTimer);
 
         // Start CloseTransition

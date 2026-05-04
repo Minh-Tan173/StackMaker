@@ -24,7 +24,6 @@ public class Player : MonoBehaviour {
     [SerializeField] private Transform stackPrefab;
     [SerializeField] private float stackHeight;
     
-    private Rigidbody rbPlayer;
     private Stack<Transform> brickCollection;
 
     private Vector3 playerVisualLocalPos;
@@ -43,7 +42,6 @@ public class Player : MonoBehaviour {
 
     private void Awake() {
 
-        rbPlayer = GetComponent<Rigidbody>();
         brickCollection = new Stack<Transform>();
 
         bridgeList = new List<Bridge>();
@@ -72,14 +70,7 @@ public class Player : MonoBehaviour {
 
     private void LevelManager_ClearObjectData(object sender, EventArgs e) {
 
-        ClearBrick();
-
-        canMove = false;
-        canInteract = true;
-        isTurnBack = false;
-
-        brickCollection.Clear();
-        bridgeList.Clear();
+        OnDespawn();
     }
 
     private void LevelManager_InitObjectData(object sender, EventArgs e) {

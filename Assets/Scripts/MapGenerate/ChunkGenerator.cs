@@ -233,7 +233,6 @@ public class ChunkGenerator : MonoBehaviour
 
 
         // Gắn với điểm neo cuối cùng (Local Space)
-        Debug.Log($"Last Pos = {finalAnchorPos}");
         winPos.transform.localPosition = finalAnchorPos;
     }
 

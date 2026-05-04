@@ -184,8 +184,7 @@ public class LevelEditorUI : MonoBehaviour
             int totalPathInChunk = pathCountPerChunkDict[currentChunk];
 
             int bridgeCount = int.Parse(bridgeCountInputField.text);
-            //int offset = 3;
-            //int clampCount = Mathf.Clamp(bridgeCount, totalPathInChunk - offset, this.lastCachedTotal);
+            //int clampCount = Mathf.Clamp(bridgeCount, totalPathInChunk, this.lastCachedTotal);
             levelSO.chunkList[currentChunkIndex].bridgeCount = bridgeCount;
 
             UpdateInputField(currentChunk);
