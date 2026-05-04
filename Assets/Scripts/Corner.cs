@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Corner : MonoBehaviour
@@ -24,9 +25,21 @@ public class Corner : MonoBehaviour
 
     private void Awake() {
 
-        Hide();
+        //Hide();
 
+        platform.OnHideCorner += Platform_OnHideCorner; ;
         platform.OnShowCorner += PlatformVisual_OnShowCorner;
+
+    }
+
+    private void OnDestroy() {
+
+        Hide();
+    }
+
+    private void Platform_OnHideCorner(object sender, EventArgs e) {
+
+        Hide();
     }
 
     private void PlatformVisual_OnShowCorner(object sender, Platform.ShowCornerEventArgs e) {
@@ -66,40 +79,40 @@ public class Corner : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
-    public GameInput.Direct GetOtherDir(GameInput.Direct playerDir) {
+    public InputManager.Direct GetOtherDir(InputManager.Direct playerDir) {
 
         switch (playerDir) {
 
-            case GameInput.Direct.Forward:
+            case InputManager.Direct.Forward:
 
-                if (curCornerType == CornerType.LeftDown) { return GameInput.Direct.Right; }
-                if (curCornerType == CornerType.LeftUp) { return GameInput.Direct.Left; }
-
-                break;
-
-            case GameInput.Direct.Back:
-
-                if (curCornerType == CornerType.RightDown) { return GameInput.Direct.Right; }
-                if (curCornerType == CornerType.RightUp) { return GameInput.Direct.Left; }
+                if (curCornerType == CornerType.LeftDown) { return InputManager.Direct.Right; }
+                if (curCornerType == CornerType.LeftUp) { return InputManager.Direct.Left; }
 
                 break;
 
-            case GameInput.Direct.Right:
+            case InputManager.Direct.Back:
 
-                if (curCornerType == CornerType.RightUp) { return GameInput.Direct.Forward; }
-                if (curCornerType == CornerType.LeftUp) { return GameInput.Direct.Back; }
+                if (curCornerType == CornerType.RightDown) { return InputManager.Direct.Right; }
+                if (curCornerType == CornerType.RightUp) { return InputManager.Direct.Left; }
 
                 break;
 
-            case GameInput.Direct.Left:
+            case InputManager.Direct.Right:
 
-                if (curCornerType == CornerType.RightDown) { return GameInput.Direct.Forward; }
-                if (curCornerType == CornerType.LeftDown) { return GameInput.Direct.Back; }
+                if (curCornerType == CornerType.RightUp) { return InputManager.Direct.Forward; }
+                if (curCornerType == CornerType.LeftUp) { return InputManager.Direct.Back; }
+
+                break;
+
+            case InputManager.Direct.Left:
+
+                if (curCornerType == CornerType.RightDown) { return InputManager.Direct.Forward; }
+                if (curCornerType == CornerType.LeftDown) { return InputManager.Direct.Back; }
 
                 break;
         }
 
         Debug.LogError("Corner dont match with any player direction");
-        return GameInput.Direct.Default;
+        return InputManager.Direct.Default;
     }
 }

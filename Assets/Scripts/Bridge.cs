@@ -13,7 +13,7 @@ public class Bridge : MonoBehaviour
         HideStack();
     }
 
-    private void HideStack() {
+    public void HideStack() {
 
         isOnStackVisual = false;
         stackVisual.gameObject.SetActive(false);
@@ -29,12 +29,14 @@ public class Bridge : MonoBehaviour
         return this.isOnStackVisual;
     }
 
-    public static void SpawnBridge(Transform bridgePrefab, Transform parent, Vector3 spawnPos , Vector3 angleRotation) {
+    public static Bridge SpawnBridge(Transform bridgePrefab, Transform parent, Vector3 spawnPos , Vector3 angleRotation) {
 
         Transform bridgeTransform = Instantiate(bridgePrefab, parent);
         bridgeTransform.gameObject.name = $"Bridge_{spawnPos.x}_{spawnPos.z}";
 
         bridgeTransform.localPosition = spawnPos;
         bridgeTransform.localRotation = Quaternion.Euler(angleRotation);
+
+        return bridgeTransform.GetComponent<Bridge>();
     }
 }

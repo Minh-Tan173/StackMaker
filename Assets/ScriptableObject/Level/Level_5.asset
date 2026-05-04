@@ -1,0 +1,196 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c81e36270d7282a448d04a56c5b4aef2, type: 3}
+  m_Name: Level_5
+  m_EditorClassIdentifier: Assembly-CSharp::LevelSO
+  chunkList:
+  - chunkName: Chunk_1
+    chunkWidth: 6
+    chunkHeight: 9
+    startNode:
+      nodePos: {x: 2, y: 7}
+      hasCornerOn: 0
+    endNode:
+      nodePos: {x: 2, y: 0}
+      hasCornerOn: 0
+    pathNodeList:
+    - nodePos: {x: 2, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 6}
+      hasCornerOn: 1
+    - nodePos: {x: 4, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 3}
+      hasCornerOn: 1
+    - nodePos: {x: 2, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 0}
+      hasCornerOn: 0
+    bridgeCount: 10
+  - chunkName: Chunk_2
+    chunkWidth: 9
+    chunkHeight: 9
+    startNode:
+      nodePos: {x: 4, y: 8}
+      hasCornerOn: 0
+    endNode:
+      nodePos: {x: 8, y: 2}
+      hasCornerOn: 0
+    pathNodeList:
+    - nodePos: {x: 4, y: 8}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 1}
+      hasCornerOn: 1
+    - nodePos: {x: 2, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 2}
+      hasCornerOn: 0
+    bridgeCount: 20
+  - chunkName: Chunk_3
+    chunkWidth: 13
+    chunkHeight: 10
+    startNode:
+      nodePos: {x: 0, y: 4}
+      hasCornerOn: 0
+    endNode:
+      nodePos: {x: 12, y: 5}
+      hasCornerOn: 0
+    pathNodeList:
+    - nodePos: {x: 0, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 1, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 2, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 8}
+      hasCornerOn: 1
+    - nodePos: {x: 6, y: 8}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 8}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 8}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 4, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 5, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 7, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 9, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 8, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 10, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 10, y: 3}
+      hasCornerOn: 0
+    - nodePos: {x: 10, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 10, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 10, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 11, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 12, y: 5}
+      hasCornerOn: 0
+    bridgeCount: 34

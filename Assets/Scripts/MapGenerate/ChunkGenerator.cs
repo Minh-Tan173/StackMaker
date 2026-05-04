@@ -1,19 +1,29 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ChunkGenerator : MonoBehaviour
 {
     public static ChunkGenerator Instance { get; private set; }
 
-    [Header("Path Data")]
-    [SerializeField] private LevelSO levelSO;
-
     [Header("Prefab")]
     [SerializeField] private Transform platformPrefab;
     [SerializeField] private Transform bridgePrefab;
+    [SerializeField] private Transform winPosPrefab;
 
+    #region Load Chunk
+    private LevelSO levelSO;
     private List<ChunkInstance> chunkList;
+    private List<Vector3> nextAnchorPointList;
+    #endregion
+
+    #region Pooling Map
+    private List<Platform> platformPool = new List<Platform>();
+    private List<Bridge> bridgePool = new List<Bridge>();
+    private List<Platform> activePlatformList = new List<Platform>();
+    private List<Bridge> activeBridgeList = new List<Bridge>();
+    #endregion
+
+    private WinPos winPos;
 
     private void Awake() {
 
@@ -21,8 +31,38 @@ public class ChunkGenerator : MonoBehaviour
 
         chunkList = new List<ChunkInstance>();
 
-        InitializeChunk();
+        nextAnchorPointList = new List<Vector3>();
+    }
 
+    private void Start() {
+        LevelManager.Instance.LoadNewMap += LevelManager_LoadNewMap;
+    }
+
+    private void OnDestroy() {
+
+        LevelManager.Instance.LoadNewMap -= LevelManager_LoadNewMap;
+    }
+
+    private void LevelManager_LoadNewMap(object sender, LevelManager.LoadNewMapEventArgs e) {
+
+        this.levelSO = e.levelSO;
+
+        ClearLevelData();
+
+        OnInit();
+    }
+
+    private void OnInit() {
+
+        // Reset old data
+        activePlatformList.Clear();
+        activeBridgeList.Clear();
+
+        chunkList.Clear();
+        nextAnchorPointList.Clear();
+
+        // Init chunk
+        InitializeChunk();
     }
 
     private void InitializeChunk() {
@@ -46,27 +86,54 @@ public class ChunkGenerator : MonoBehaviour
 
                     newChunk.gridNodeDict.Add(nodePos, platformVisual);
                     newChunk.gridMaps[x, y] = GridNode.NodeID.Empty;
+
+
                 }
             }
 
             // Spawn Path
             InitializePathByChunk(newChunk, chunkData);
+
+            // Spawn Bridge
+            InitializeBridge(newChunk, chunkData);
+        }
+
+        // After spawn Path/Bridge --> Set chunkPos base on bridge
+        Vector3 currentAnchor = Vector3.zero;
+
+        for (int i = 0; i < chunkList.Count; i++) {
+
+            Transform chunkTransform = chunkList[i].chunkTransform;
+            ChunkData chunkData = levelSO.chunkList[i];
+
+            if (i == 0) {
+                chunkTransform.localPosition = Vector3.zero;
+            }
+            else {
+                Vector2Int entryNodeLocal = chunkData.startNode.nodePos;
+                Vector3 entryOffset = new Vector3(entryNodeLocal.x, 0f, entryNodeLocal.y);
+
+                chunkTransform.localPosition = currentAnchor - entryOffset;
+            }
+
+
+            currentAnchor = chunkTransform.localPosition + nextAnchorPointList[i];
         }
 
         // After Spawn chunk done --> Spawn WinPos
-        InitializeWinPos();
-
+        InitializeWinPos(currentAnchor);
 
     }
 
     private Platform SpawnPlatform(int x, int y, Transform parent) {
 
-        Transform platformTransform = Instantiate(platformPrefab, parent);
+        Vector3 localPos = new Vector3(x, 0f, y);
+        Platform platform = GetPlatformFromPool(parent, localPos);
+        platform.gameObject.name = $"Platform_{x}_{y}";
 
-        platformTransform.localPosition = new Vector3(x, 0, y);
-        platformTransform.gameObject.name = $"Platform_{x}_{y}";
+        platform.ResetToDefault(); // Reset platform visual
 
-        return platformTransform.GetComponent<Platform>();
+        return platform;
     }
 
     private void InitializePathByChunk(ChunkInstance chunkInstance, ChunkData chunkData) {
@@ -96,17 +163,16 @@ public class ChunkGenerator : MonoBehaviour
             if (chunkInstance.gridMaps[keyPos.x, keyPos.y] != GridNode.NodeID.Path) {
 
                 chunkInstance.gridNodeDict[keyPos].ShowFloor();
-                chunkInstance.gridMaps[keyPos.x, keyPos.y] = GridNode.NodeID.Floor;
+                chunkInstance.gridMaps[keyPos.x, keyPos.y] = GridNode.NodeID.Wall;
             }
 
         }
 
-        InitializeBridge(chunkInstance, chunkData);
     }
 
     private void InitializeBridge(ChunkInstance chunkInstance, ChunkData chunk) {
 
-        PathNode endNode = chunk.pathNodeList[chunk.pathNodeList.Count - 1];
+        PathNode endNode = chunk.endNode;
 
         Vector3 angle = Vector3.zero;
         Vector3 spawnPos = new Vector3(endNode.nodePos.x, 0f, endNode.nodePos.y);
@@ -137,35 +203,78 @@ public class ChunkGenerator : MonoBehaviour
             Debug.LogError("Nothing dir true");
         }
 
-            // 2. Spawn Bridge
+        // 2. Spawn Bridge
         int bridgeCount = chunk.bridgeCount;
         for (int i = 0; i < bridgeCount; i++) {
 
             spawnPos += spawnPosPlus;
 
-            Bridge.SpawnBridge(bridgePrefab, chunkInstance.chunkTransform, spawnPos, angle);
+            GetBridgeFromPool(chunkInstance.chunkTransform, spawnPos, angle);
+            //Bridge.SpawnBridge(bridgePrefab, chunkInstance.chunkTransform, spawnPos, angle);
         }
-        
+
+        Vector3 nextChunkPos = spawnPos + spawnPosPlus;
+        nextAnchorPointList.Add(nextChunkPos);
     }
 
-    private void InitializeWinPos() {
-        if (chunkList.Count == 0) return;
+    private void InitializeWinPos(Vector3 finalAnchorPos) {
 
-        ChunkInstance lastChunkInstance = chunkList[chunkList.Count - 1];
-        ChunkData lastChunkData = levelSO.chunkList[levelSO.chunkList.Count - 1];
-
-        PathNode lastNode = lastChunkData.pathNodeList[lastChunkData.pathNodeList.Count - 1];
-
-        float offsetX = lastNode.nodePos.x + lastChunkData.bridgeCount + 1;
-
-        Vector3 localWinPos = new Vector3(offsetX, 0, lastNode.nodePos.y);
-
-
-        Vector3 worldWinPos = lastChunkInstance.chunkTransform.TransformPoint(localWinPos);
+        if (chunkList.Count == 0 || winPosPrefab == null) return;
 
         // Spawn
-        Transform winPosTransform = Instantiate(levelSO.winPosPrefab, this.transform);
-        winPosTransform.position = worldWinPos;
+        if (winPos == null) {
+            // Nếu chưa có winPos thì mới spawn lại
+            Transform winPosTransform = Instantiate(winPosPrefab, this.transform);
+            winPos = winPosTransform.GetComponent<WinPos>();
+        }
+        else {
+            winPos.gameObject.SetActive(true);
+        }
+
+
+        // Gắn với điểm neo cuối cùng (Local Space)
+        winPos.transform.localPosition = finalAnchorPos;
+    }
+
+    private void ClearLevelData() {
+
+        // Clear Platform
+        foreach (Platform platform in activePlatformList) {
+
+            platform.gameObject.SetActive(false);
+            platform.transform.SetParent(this.transform);
+
+            platformPool.Add(platform);
+        }
+        activePlatformList.Clear();
+
+        // Clear Bridge
+        foreach (Bridge bridge in activeBridgeList) {
+
+            bridge.gameObject.SetActive(false);
+            bridge.transform.SetParent(this.transform);
+
+            bridgePool.Add(bridge); 
+        }
+        activeBridgeList.Clear();
+
+        // Delete game object Chunk
+        foreach (var chunk in chunkList) {
+
+            if (chunk.chunkTransform != null) {
+
+                Destroy(chunk.chunkTransform.gameObject);
+            }
+        }
+
+        chunkList.Clear();
+        nextAnchorPointList.Clear();
+
+        // Clear WinPos
+        if (winPos != null) {
+
+            winPos.gameObject.SetActive(false);     
+        }
     }
 
     private void ApplyCornerRotation(ChunkInstance chunkInstance, Vector2Int nodePos) {
@@ -192,10 +301,67 @@ public class ChunkGenerator : MonoBehaviour
         else if (hasLeftPath && hasUpPath) {
             chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.LeftUp);
         }
-        else {
-            Debug.LogError("Nothing dir true");
-        }
+        //else {
+
+        //    Platform platform = this.GetComponentInParent<Platform>();
+
+        //    Debug.LogError($"Error happen at platform: {platform.gameObject.name}");
+        //}
     }
+
+    private Platform GetPlatformFromPool(Transform parent, Vector3 localPos) {
+
+        Platform platform;
+
+        if (platformPool.Count > 0) {
+            // If there is an available platform in the pool
+
+            platform = platformPool[platformPool.Count - 1];
+            platformPool.RemoveAt(platformPool.Count - 1);
+
+            platform.transform.SetParent(parent);
+            platform.gameObject.SetActive(true);
+        }
+        else {
+            // If pool is empty
+            platform = Instantiate(platformPrefab, parent).GetComponent<Platform>();
+        }
+
+        platform.transform.localPosition = localPos;
+
+        activePlatformList.Add(platform);
+
+        return platform;
+    }
+
+    private Bridge GetBridgeFromPool(Transform parent, Vector3 localPos, Vector3 angleRotation) {
+
+        Bridge bridge;
+
+        if (bridgePool.Count > 0) {
+            // If there is an available bridge in the pool
+
+            bridge = bridgePool[bridgePool.Count - 1];
+            bridgePool.RemoveAt(bridgePool.Count - 1);
+            bridge.gameObject.SetActive(true);
+
+            bridge.transform.SetParent(parent);
+            bridge.transform.localPosition = localPos;
+            bridge.transform.localRotation = Quaternion.Euler(angleRotation);
+        }
+        else {
+            // If pool is empty
+
+            bridge = Bridge.SpawnBridge(bridgePrefab, parent, localPos, angleRotation);
+        }
+
+        bridge.HideStack();
+
+        activeBridgeList.Add(bridge);
+
+        return bridge;
+    }
+    
     
 
     public LevelSO GetLevelSO() {
@@ -225,11 +391,7 @@ public class ChunkInstance {
         GameObject chunkObj = new GameObject($"Chunk_{index}");
         chunkTransform = chunkObj.transform;
         chunkTransform.SetParent(parent);
-        chunkTransform.localPosition = chunkData.chunkPos;
-        chunkTransform.localRotation = Quaternion.Euler(chunkData.chunkRotation);
     }
-
-
 
     public bool IsValidNode(Vector2Int pos) {
         return pos.x >= 0 && pos.x < chunkData.chunkWidth && pos.y >= 0 && pos.y < chunkData.chunkHeight;

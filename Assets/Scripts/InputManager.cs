@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class GameInput : MonoBehaviour
+public class InputManager : MonoBehaviour
 {
 
     public enum Direct {
@@ -12,7 +12,7 @@ public class GameInput : MonoBehaviour
         Left
     }
 
-    public static GameInput Instance { get; private set; }
+    public static InputManager Instance { get; private set; }
 
     public event EventHandler<OnMovedCommandEventArgs> OnMovedCommand;
     public class OnMovedCommandEventArgs : EventArgs {
@@ -80,6 +80,9 @@ public class GameInput : MonoBehaviour
 
     private void MousePress_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 
+        if (LevelManager.Instance.IsEditorScene() && LevelEditorUI.Instance.IsShow()) { return; }
+        if (LevelManager.Instance.GetCurrentLevelState() != LevelManager.LevelState.GameRunning) { return; }
+
         realsedPos = GetMouseScreenPos();
 
         float sqrMoveDis = (pressedPos - realsedPos).sqrMagnitude;
@@ -93,6 +96,9 @@ public class GameInput : MonoBehaviour
     }
 
     private void MousePress_started(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+
+        if (LevelManager.Instance.IsEditorScene() && LevelEditorUI.Instance.IsShow()) { return; }
+        if (LevelManager.Instance.GetCurrentLevelState() != LevelManager.LevelState.GameRunning) { return; }
 
         pressedPos = GetMouseScreenPos();
     }

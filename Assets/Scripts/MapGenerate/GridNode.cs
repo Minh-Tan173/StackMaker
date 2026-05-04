@@ -5,7 +5,7 @@ public class GridNode
 {
     public enum NodeID {
         Empty,
-        Floor,
+        Wall,
         Path, 
     }
 

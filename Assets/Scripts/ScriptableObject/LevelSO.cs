@@ -5,7 +5,6 @@ using UnityEngine;
 public class LevelSO : ScriptableObject
 {
     [Header("Chunk")]
-    public Transform winPosPrefab;
     public List<ChunkData> chunkList;
 
 }
@@ -20,11 +19,9 @@ public class ChunkData {
     public int chunkWidth;
     public int chunkHeight;
 
-    [Header("Chunk Pos")]
-    public Vector3 chunkPos;
-    public Vector3 chunkRotation;
-
     [Header("Path Data")]
+    public PathNode startNode;
+    public PathNode endNode;
     public List<PathNode> pathNodeList;
 
     [Header("Bridge Data")]

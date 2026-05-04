@@ -17,8 +17,12 @@ MonoBehaviour:
   - chunkName: Chunk 1
     chunkWidth: 9
     chunkHeight: 7
-    chunkPos: {x: 0, y: 0, z: 0}
-    chunkRotation: {x: 0, y: 0, z: 0}
+    startNode:
+      nodePos: {x: 1, y: 3}
+      hasCornerOn: 0
+    endNode:
+      nodePos: {x: 8, y: 3}
+      hasCornerOn: 0
     pathNodeList:
     - nodePos: {x: 1, y: 3}
       hasCornerOn: 0
@@ -44,8 +48,6 @@ MonoBehaviour:
       hasCornerOn: 0
     - nodePos: {x: 7, y: 4}
       hasCornerOn: 0
-    - nodePos: {x: 7, y: 5}
-      hasCornerOn: 1
     - nodePos: {x: 6, y: 5}
       hasCornerOn: 0
     - nodePos: {x: 5, y: 5}
@@ -56,17 +58,21 @@ MonoBehaviour:
       hasCornerOn: 0
     - nodePos: {x: 4, y: 3}
       hasCornerOn: 1
+    - nodePos: {x: 7, y: 5}
+      hasCornerOn: 1
     - nodePos: {x: 8, y: 3}
       hasCornerOn: 0
     bridgeCount: 6
   - chunkName: Chunk 2
     chunkWidth: 11
     chunkHeight: 9
-    chunkPos: {x: 15, y: 0, z: -1}
-    chunkRotation: {x: 0, y: 0, z: 0}
-    pathNodeList:
-    - nodePos: {x: 0, y: 4}
+    startNode:
+      nodePos: {x: 0, y: 4}
       hasCornerOn: 0
+    endNode:
+      nodePos: {x: 6, y: 0}
+      hasCornerOn: 0
+    pathNodeList:
     - nodePos: {x: 1, y: 4}
       hasCornerOn: 0
     - nodePos: {x: 2, y: 4}
@@ -133,12 +139,18 @@ MonoBehaviour:
       hasCornerOn: 0
     - nodePos: {x: 6, y: 0}
       hasCornerOn: 0
+    - nodePos: {x: 0, y: 4}
+      hasCornerOn: 0
     bridgeCount: 17
   - chunkName: Chunk 3
     chunkWidth: 10
     chunkHeight: 12
-    chunkPos: {x: 16, y: 0, z: -30}
-    chunkRotation: {x: 0, y: 0, z: 0}
+    startNode:
+      nodePos: {x: 5, y: 11}
+      hasCornerOn: 0
+    endNode:
+      nodePos: {x: 9, y: 1}
+      hasCornerOn: 0
     pathNodeList:
     - nodePos: {x: 5, y: 11}
       hasCornerOn: 0
