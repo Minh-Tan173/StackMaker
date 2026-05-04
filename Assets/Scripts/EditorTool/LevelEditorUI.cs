@@ -58,6 +58,8 @@ public class LevelEditorUI : MonoBehaviour
         #region Button Listener
         resetChunkButton.onClick.AddListener(() => {
 
+            if (currentChunkIndex >= levelSO.chunkList.Count - 1) { return; }
+
             ChunkData chunkData = levelSO.chunkList[currentChunkIndex];
 
             chunkData.startNode.nodePos = Vector2Int.zero;
@@ -105,13 +107,7 @@ public class LevelEditorUI : MonoBehaviour
 
         addChunkButton.onClick.AddListener(() => {
 
-            ChunkData newChunk = new ChunkData();
-
-            newChunk.chunkName = "";
-            newChunk.chunkWidth = 0;
-            newChunk.chunkHeight = 0;
-            newChunk.pathNodeList = new List<PathNode>();
-            newChunk.bridgeCount = 0;
+            ChunkData newChunk = CreateNewChunk();
 
             levelSO.chunkList.Add(newChunk);
 
@@ -286,9 +282,13 @@ public class LevelEditorUI : MonoBehaviour
 
             cellSize = 80f;
         }
-        else {
+        else if (gridWidth <= 20 && gridHeight <= 16) {
             // Big chunk
             cellSize = 55f;
+        }
+        else {
+            // Huge chunk
+            cellSize = 45f;
         }
 
         gridLayoutGroup.cellSize = new Vector2(cellSize, cellSize);
@@ -526,6 +526,21 @@ public class LevelEditorUI : MonoBehaviour
         }
 
         return total;
+    }
+
+    private ChunkData CreateNewChunk() {
+
+        ChunkData newChunk = new ChunkData();
+
+        newChunk.chunkName = "";
+        newChunk.chunkWidth = 0;
+        newChunk.chunkHeight = 0;
+        newChunk.pathNodeList = new List<PathNode>();
+        newChunk.startNode = new PathNode { nodePos = Vector2Int.zero, hasCornerOn = false };
+        newChunk.endNode = new PathNode { nodePos = Vector2Int.zero, hasCornerOn = false };
+        newChunk.bridgeCount = 0;
+
+        return newChunk;
     }
 
     private void Show() {
