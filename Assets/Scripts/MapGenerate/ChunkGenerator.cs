@@ -8,6 +8,7 @@ public class ChunkGenerator : MonoBehaviour
     [Header("Prefab")]
     [SerializeField] private Transform platformPrefab;
     [SerializeField] private Transform bridgePrefab;
+    [SerializeField] private Transform winPosPrefab;
 
     #region Load Chunk
     private LevelSO levelSO;
@@ -218,12 +219,12 @@ public class ChunkGenerator : MonoBehaviour
 
     private void InitializeWinPos(Vector3 finalAnchorPos) {
 
-        if (chunkList.Count == 0 || levelSO.winPosPrefab == null) return;
+        if (chunkList.Count == 0 || winPosPrefab == null) return;
 
         // Spawn
         if (winPos == null) {
             // Nếu chưa có winPos thì mới spawn lại
-            Transform winPosTransform = Instantiate(levelSO.winPosPrefab, this.transform);
+            Transform winPosTransform = Instantiate(winPosPrefab, this.transform);
             winPos = winPosTransform.GetComponent<WinPos>();
         }
         else {
@@ -232,6 +233,7 @@ public class ChunkGenerator : MonoBehaviour
 
 
         // Gắn với điểm neo cuối cùng (Local Space)
+        Debug.Log($"Last Pos = {finalAnchorPos}");
         winPos.transform.localPosition = finalAnchorPos;
     }
 

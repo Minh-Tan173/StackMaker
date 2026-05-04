@@ -5,7 +5,6 @@ using UnityEngine;
 public class LevelSO : ScriptableObject
 {
     [Header("Chunk")]
-    public Transform winPosPrefab;
     public List<ChunkData> chunkList;
 
 }

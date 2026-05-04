@@ -166,6 +166,8 @@ public class LevelEditorUI : MonoBehaviour
 
             string chunkName = chunkNameInputField.text;
 
+            if (currentChunkIndex > levelSO.chunkList.Count - 1) { return; }
+
             levelSO.chunkList[currentChunkIndex].chunkName = chunkName;
 
             UpdateLevelData();
@@ -176,12 +178,15 @@ public class LevelEditorUI : MonoBehaviour
 
         bridgeCountInputField.onEndEdit.AddListener(delegate {
 
+            if (bridgeCountInputField.text == "") { return; }
+
             ChunkData currentChunk = levelSO.chunkList[currentChunkIndex];
             int totalPathInChunk = pathCountPerChunkDict[currentChunk];
 
             int bridgeCount = int.Parse(bridgeCountInputField.text);
-            int clampCount = Mathf.Clamp(bridgeCount, totalPathInChunk, this.lastCachedTotal);
-            levelSO.chunkList[currentChunkIndex].bridgeCount = clampCount;
+            //int offset = 3;
+            //int clampCount = Mathf.Clamp(bridgeCount, totalPathInChunk - offset, this.lastCachedTotal);
+            levelSO.chunkList[currentChunkIndex].bridgeCount = bridgeCount;
 
             UpdateInputField(currentChunk);
             UpdateLevelData();
