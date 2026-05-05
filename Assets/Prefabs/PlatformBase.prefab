@@ -427,6 +427,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8573926469534555117}
+  - component: {fileID: 7147924421643468865}
   - component: {fileID: 3802480150141689200}
   m_Layer: 0
   m_Name: CornerVisual
@@ -451,6 +452,27 @@ Transform:
   - {fileID: 4316603691202687245}
   m_Father: {fileID: 4628718100525543195}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &7147924421643468865
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8758719625101370730}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3802480150141689200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,6 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eed0159c64b4a8a4889a71bf8f89e149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Corner
+  animator: {fileID: 4226120087331397427}
   platform: {fileID: 8009367472122991754}
   rightDownEuler: {x: 0, y: -90, z: 0}
   leftDownEuler: {x: 0, y: 0, z: 0}
@@ -482,15 +505,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4511453221983432, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.01
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4511453221983432, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 8.08
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4511453221983432, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.01
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4511453221983432, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -541,6 +564,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}
+--- !u!95 &4226120087331397427 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95031749032475382, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}
+  m_PrefabInstance: {fileID: 4321114830824089029}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4316603691202687245 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4511453221983432, guid: ffe76fcc801f5c140b17312e673abed7, type: 3}

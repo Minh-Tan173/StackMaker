@@ -15,5 +15,7 @@ MonoBehaviour:
   levelSOList:
   - {fileID: 11400000, guid: f950d6069c5e26e439ab24822f5af126, type: 2}
   - {fileID: 11400000, guid: dbf1d063c84630a4ea8c7ef200274929, type: 2}
-  - {fileID: 11400000, guid: c9716c8129a7bdd44a639ff32a68f420, type: 2}
   - {fileID: 11400000, guid: 5ea7dea83634faf4d8bf95b5624e57d5, type: 2}
+  - {fileID: 11400000, guid: c9716c8129a7bdd44a639ff32a68f420, type: 2}
+  - {fileID: 11400000, guid: 0fe3feb5259c8e5488cad8153ba66b61, type: 2}
+  - {fileID: 11400000, guid: c82e187f0d7a2c24596bd73e70de9c81, type: 2}

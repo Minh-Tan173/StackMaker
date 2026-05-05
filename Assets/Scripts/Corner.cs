@@ -12,6 +12,9 @@ public class Corner : MonoBehaviour
 
     }
 
+    [Header("Visual animator")]
+    [SerializeField] private Animator animator;
+    
     [Header("Parent")]
     [SerializeField] private Platform platform;
 
@@ -20,6 +23,8 @@ public class Corner : MonoBehaviour
     [SerializeField] private Vector3 leftDownEuler;
     [SerializeField] private Vector3 rightUpEuler;
     [SerializeField] private Vector3 leftUpEuler;
+
+    private const string TRIGGER_INTERACT = "Interact";
 
     private CornerType curCornerType;
 
@@ -35,6 +40,15 @@ public class Corner : MonoBehaviour
     private void OnDestroy() {
 
         Hide();
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        
+        if (other.CompareTag(GameTag.PLAYER_TAG)) {
+            // if Trigger by Player
+
+            animator.SetTrigger(TRIGGER_INTERACT);
+        }
     }
 
     private void Platform_OnHideCorner(object sender, EventArgs e) {

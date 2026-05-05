@@ -304,7 +304,7 @@ public class Player : MonoBehaviour {
                 this.pendingCorner = other.GetComponentInChildren<Corner>();
             }
 
-            // Handle interaction with Path plaform
+            // Handle interaction with Path platform
             if (platform.IsStackVisualOn()) {
 
                 platform.HideStack();
