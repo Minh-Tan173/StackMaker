@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class WinPos : MonoBehaviour {
+
+    public static event EventHandler OnWinSFX;
 
     [Header("Point")]
     [SerializeField] private Transform targetPoint;
@@ -45,8 +48,9 @@ public class WinPos : MonoBehaviour {
         LevelManager.Instance.OnWin(isShowWinUI: false);
 
         yield return null;
-        
+
         // WinPos event
+        OnWinSFX?.Invoke(this, EventArgs.Empty);
         ShowPartical();
         OpenChest();
 

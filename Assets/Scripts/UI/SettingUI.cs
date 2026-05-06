@@ -7,6 +7,8 @@ public class SettingUI : MonoBehaviour
     public static SettingUI Instance { get; private set; }
 
     [Header("Button")]
+    [SerializeField] private Button sfxButton;
+    [SerializeField] private Button musicButton;
     [SerializeField] private Button mainMenuButton;
     [SerializeField] private Button retryButton;
     [SerializeField] private Button closeButton;
@@ -23,6 +25,16 @@ public class SettingUI : MonoBehaviour
         Instance = this;
 
         rectTransform = GetComponent<RectTransform>();
+
+        sfxButton.onClick.AddListener(() => {
+
+            SoundManager.Instance.ToggleSFXVolume();
+        });
+
+        musicButton.onClick.AddListener(() => {
+
+            MusicManager.Instance.ToggleMusicVolume();
+        });
 
         mainMenuButton.onClick.AddListener(() => {
 
@@ -126,7 +138,20 @@ public class SettingUI : MonoBehaviour
 
     private void OnInit() {
 
+        // Update Pos
         rectTransform.anchoredPosition = startPos;
+
+        // Update Sound Button
+        if (SoundManager.Instance.IsMutedSFX()) {
+
+            sfxButton.GetComponent<SpriteSwapButton>().SwapSprite();
+        }
+        
+        if (MusicManager.Instance.IsMutedMusic()) {
+
+            musicButton.GetComponent<SpriteSwapButton>().SwapSprite();
+        }
+
         Hide(); 
        
     }

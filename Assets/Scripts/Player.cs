@@ -7,6 +7,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
+    // SFX event
+    public static event EventHandler OnAddBrickSFX;
+    public static event EventHandler OnRemoveBrickSFX;
+    
     public event EventHandler StartMoving;
     public event EventHandler ResetAnimator;
 
@@ -241,6 +245,9 @@ public class Player : MonoBehaviour {
 
     private void AddBrick() {
 
+        // SFX
+        OnAddBrickSFX?.Invoke(this, EventArgs.Empty);
+
         // Up height stack
         foreach (Transform stack in stackContainer) {
 
@@ -258,6 +265,8 @@ public class Player : MonoBehaviour {
     }
 
     private void RemoveBrick() {
+
+        OnRemoveBrickSFX?.Invoke(this, EventArgs.Empty);
 
         // Remove first stack
         Transform bottomStack = brickCollection.Pop();

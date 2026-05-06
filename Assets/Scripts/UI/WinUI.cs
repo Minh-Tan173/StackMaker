@@ -63,6 +63,7 @@ public class WinUI : MonoBehaviour
 
     private void LevelManager_OnWinUI(object sender, System.EventArgs e) {
 
+        OnInit();
         Show();
         StartCoroutine(ShowCoroutine());
     }
