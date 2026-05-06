@@ -58,7 +58,7 @@ public class LevelEditorUI : MonoBehaviour
         #region Button Listener
         resetChunkButton.onClick.AddListener(() => {
 
-            if (currentChunkIndex >= levelSO.chunkList.Count - 1) { return; }
+            if (!HasChunkInList(currentChunkIndex)) { return; }
 
             ChunkData chunkData = levelSO.chunkList[currentChunkIndex];
 
@@ -166,7 +166,7 @@ public class LevelEditorUI : MonoBehaviour
 
             string chunkName = chunkNameInputField.text;
 
-            if (HasChunkInList(currentChunkIndex)) { return; }
+            if (!HasChunkInList(currentChunkIndex)) { return; }
 
             levelSO.chunkList[currentChunkIndex].chunkName = chunkName;
 
@@ -178,7 +178,7 @@ public class LevelEditorUI : MonoBehaviour
 
         bridgeCountInputField.onEndEdit.AddListener(delegate {
 
-            if (HasChunkInList(currentChunkIndex)) { return; }
+            if (!HasChunkInList(currentChunkIndex)) { return; }
             if (bridgeCountInputField.text == "") { return; }
 
             ChunkData currentChunk = levelSO.chunkList[currentChunkIndex];
@@ -430,7 +430,7 @@ public class LevelEditorUI : MonoBehaviour
 
     private void OnSizeChunkChanged() {
 
-        if (HasChunkInList(currentChunkIndex)) { return; }
+        if (!HasChunkInList(currentChunkIndex)) { return; }
         if (levelSO.chunkList.Count == 0) { return; }
 
         if (widthInputField.text == "") { return; }
@@ -550,6 +550,7 @@ public class LevelEditorUI : MonoBehaviour
     }
 
     private bool HasChunkInList(int index) {
+
         if (index > levelSO.chunkList.Count - 1) {
             return false;
         }

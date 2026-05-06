@@ -91,17 +91,35 @@ MonoBehaviour:
       nodePos: {x: 9, y: 5}
       hasCornerOn: 0
     pathNodeList:
+    - nodePos: {x: 6, y: 10}
+      hasCornerOn: 1
+    - nodePos: {x: 6, y: 9}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 8}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 7}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 6}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 5}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 4}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 2}
+      hasCornerOn: 0
+    - nodePos: {x: 6, y: 3}
+      hasCornerOn: 0
     - nodePos: {x: 6, y: 1}
       hasCornerOn: 1
     - nodePos: {x: 5, y: 1}
       hasCornerOn: 0
     - nodePos: {x: 4, y: 1}
       hasCornerOn: 0
-    - nodePos: {x: 3, y: 1}
-      hasCornerOn: 0
     - nodePos: {x: 2, y: 1}
       hasCornerOn: 0
     - nodePos: {x: 1, y: 1}
+      hasCornerOn: 0
+    - nodePos: {x: 3, y: 1}
       hasCornerOn: 0
     - nodePos: {x: 1, y: 2}
       hasCornerOn: 0
@@ -121,22 +139,6 @@ MonoBehaviour:
       hasCornerOn: 0
     - nodePos: {x: 3, y: 6}
       hasCornerOn: 0
-    - nodePos: {x: 6, y: 2}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 3}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 4}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 6}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 8}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 9}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 7}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 5}
-      hasCornerOn: 0
     - nodePos: {x: 3, y: 5}
       hasCornerOn: 0
     - nodePos: {x: 4, y: 5}
@@ -148,7 +150,5 @@ MonoBehaviour:
     - nodePos: {x: 8, y: 5}
       hasCornerOn: 0
     - nodePos: {x: 9, y: 5}
-      hasCornerOn: 0
-    - nodePos: {x: 6, y: 10}
       hasCornerOn: 0
     bridgeCount: 28
