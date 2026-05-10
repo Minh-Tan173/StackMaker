@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c81e36270d7282a448d04a56c5b4aef2, type: 3}
   m_Name: Level_2
   m_EditorClassIdentifier: Assembly-CSharp::LevelSO
-  winPosPrefab: {fileID: 3256946138913599874, guid: 8433fa50b6f21114885c6995e53d2876, type: 3}
   chunkList:
   - chunkName: Chunk_1
     chunkWidth: 10

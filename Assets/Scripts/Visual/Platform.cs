@@ -33,6 +33,10 @@ public class Platform : MonoBehaviour
         floorVisual.gameObject.SetActive(false);
         stackVisual.gameObject.SetActive(false);
 
+        hasCornerOn = false;
+        isStackVisualOn = false;
+        nodeID = GridNode.NodeID.Empty;
+
         OnHideCorner?.Invoke(this, EventArgs.Empty);
     }
 
@@ -55,7 +59,6 @@ public class Platform : MonoBehaviour
     }
         
     public void ShowCorner(Corner.CornerType cornerType) {
-
         hasCornerOn = true;
 
         OnShowCorner?.Invoke(this, new ShowCornerEventArgs { cornerType = cornerType });

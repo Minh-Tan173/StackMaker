@@ -314,12 +314,6 @@ public class ChunkGenerator : MonoBehaviour
         else if (hasLeftPath && hasUpPath) {
             chunkInstance.gridNodeDict[nodePos].ShowCorner(Corner.CornerType.LeftUp);
         }
-        //else {
-
-        //    Platform platform = this.GetComponentInParent<Platform>();
-
-        //    Debug.LogError($"Error happen at platform: {platform.gameObject.name}");
-        //}
     }
 
     private Platform GetPlatformFromPool(Transform parent, Vector3 localPos) {

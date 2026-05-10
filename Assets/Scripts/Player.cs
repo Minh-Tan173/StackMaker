@@ -124,13 +124,13 @@ public class Player : MonoBehaviour {
                 // If having Pending Corner
 
                 InputManager.Direct nextDirect = pendingCorner.GetOtherDir(this.currentDirect);
+                pendingCorner = null;
 
                 if (nextDirect != InputManager.Direct.Default) {
                     currentDirect = nextDirect;
                     StartNewSegment(GetMoveDir(this.currentDirect));
                 }
 
-                pendingCorner = null;
             }
 
             if (isTurnBack) {
