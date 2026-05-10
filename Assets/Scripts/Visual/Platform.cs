@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Platform : MonoBehaviour
@@ -14,6 +15,10 @@ public class Platform : MonoBehaviour
     [Header("Child Visual")]
     [SerializeField] private Transform floorVisual;
     [SerializeField] private Transform stackVisual;
+
+    [Header("Ref")]
+    [SerializeField] private BoxCollider boxCollider;
+    [SerializeField] private Corner corner;
 
     private GridNode.NodeID nodeID;
     private bool hasCornerOn = false;
@@ -69,8 +74,22 @@ public class Platform : MonoBehaviour
         return this.nodeID;
     }
 
-    public bool HasCornerOn() {
-        return this.hasCornerOn;
+    public bool TryGetCorner(out Corner corner) {
+
+        if (this.hasCornerOn) {
+
+            corner = this.corner;
+            return true;
+        }
+        else {
+
+            corner = null;
+            return false;
+        }
+    }
+
+    public BoxCollider GetBoxCollider() {
+        return this.boxCollider;
     }
 
     public bool IsStackVisualOn() {

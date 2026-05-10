@@ -24,10 +24,11 @@ public class Player : MonoBehaviour {
     [Header("Layer")]
     [SerializeField] private LayerMask platformLayer;
 
-    [Header("Stack Data")]
-    [SerializeField] private Transform stackPrefab;
-    [SerializeField] private float stackHeight;
-    
+    [Header("Brick")]
+    [SerializeField] private Transform brickPrefab;
+    [SerializeField] private float brickHeight;
+    [SerializeField] private BrickPool brickPool;
+
     private Stack<Transform> brickCollection;
 
     private Vector3 playerVisualLocalPos;
@@ -188,8 +189,7 @@ public class Player : MonoBehaviour {
             for (int i = 0; i < sortedHit.Count; i++) {
 
                 // Handle if find WinPos 
-                WinPos winPos = sortedHit[i].collider.GetComponent<WinPos>();
-                if (winPos != null) {
+                if (sortedHit[i].collider.TryGetComponent<WinPos>(out WinPos winPos)) {
 
                     startPos = this.transform.position;
 
@@ -200,8 +200,7 @@ public class Player : MonoBehaviour {
                 }
 
                 // Handle if find Floor
-                Platform platform = sortedHit[i].collider.GetComponent<Platform>();
-                if (platform != null) {
+                if (sortedHit[i].collider.TryGetComponent<Platform>(out Platform platform)) {
 
                     if (platform.GetNodeID() == GridNode.NodeID.Wall) {
 
@@ -218,8 +217,7 @@ public class Player : MonoBehaviour {
                     }
                 }
 
-                Bridge bridge = sortedHit[i].collider.GetComponent<Bridge>();
-                if (bridge != null) {
+                if (sortedHit[i].collider.TryGetComponent<Bridge>(out Bridge bridge)) {
 
                     bridgeList.Add(bridge);
                 }
@@ -233,14 +231,14 @@ public class Player : MonoBehaviour {
 
     private Vector3 GetMoveDir(InputManager.Direct inputDir) {
 
-        switch (inputDir) {
-            case InputManager.Direct.Forward: return new Vector3(1, 0, 0);
-            case InputManager.Direct.Back: return new Vector3(-1, 0, 0);
-            case InputManager.Direct.Right: return new Vector3(0, 0, -1f);
-            case InputManager.Direct.Left: return new Vector3(0f, 0f, 1f);
+        return inputDir switch {
+            InputManager.Direct.Forward => new Vector3(1f, 0f, 0f),
+            InputManager.Direct.Back => new Vector3(-1f, 0f, 0f),
+            InputManager.Direct.Right => new Vector3(0f, 0f, -1f),
+            InputManager.Direct.Left => new Vector3(0f, 0f, 1f),
 
-            default: return Vector3.zero;
-        }
+            _ => Vector3.zero
+        };
     }
 
     private void AddBrick() {
@@ -248,49 +246,39 @@ public class Player : MonoBehaviour {
         // SFX
         OnAddBrickSFX?.Invoke(this, EventArgs.Empty);
 
-        // Up height stack
-        foreach (Transform stack in stackContainer) {
+        float newBrickPosY = brickCollection.Count * brickHeight;
 
-            stack.localPosition += Vector3.up * stackHeight;
-        }
+        // Update new Brick
+        GameObject brickObj = brickPool.Spawn(Vector3.zero, Quaternion.identity, stackContainer);
+        brickObj.transform.localPosition = new Vector3(0f, newBrickPosY, 0f);
 
-        // Up height Player
-        playerVisual.localPosition += Vector3.up * stackHeight;
+        brickCollection.Push(brickObj.transform);
 
-        // Spawn new stack
-        Transform stackTransform = Instantiate(stackPrefab, stackContainer);
-        stackTransform.localPosition = Vector3.zero;
-
-        brickCollection.Push(stackTransform);
+        // Update Player Height
+        playerVisual.localPosition = playerVisualLocalPos + new Vector3(0f, brickCollection.Count * brickHeight, 0f);
     }
+
 
     private void RemoveBrick() {
 
         OnRemoveBrickSFX?.Invoke(this, EventArgs.Empty);
 
-        // Remove first stack
-        Transform bottomStack = brickCollection.Pop();
-        Destroy(bottomStack.gameObject);
+        // Remove First Brick and return it to the Pool
+        Transform topBrick = brickCollection.Pop();
+        brickPool.Despawn(topBrick.gameObject);
 
-        //
-        foreach (Transform brick in brickCollection) {
-
-            brick.localPosition -= Vector3.up * stackHeight;
-        }
-
-        //
-        playerVisual.localPosition -= Vector3.up * stackHeight;
-        
+        // Lower Player Height
+        playerVisual.localPosition = playerVisualLocalPos + new Vector3(0f, brickCollection.Count * brickHeight, 0f);
     }
 
     private void ClearBrick() {
         
         while (brickCollection.Count > 0) {
 
-            Transform bottomBrick = brickCollection.Pop();
-            Destroy(bottomBrick.gameObject);
+            Transform topBrick = brickCollection.Pop();
+            brickPool.Despawn(topBrick.gameObject);
         }
-
+            
         playerVisual.localPosition = playerVisualLocalPos;
     }
 
@@ -300,7 +288,7 @@ public class Player : MonoBehaviour {
 
         if (other.CompareTag(GameTag.PLATFORM_TAG)) {
 
-            Platform platform = other.GetComponent<Platform>();
+            ChunkGenerator.Instance.GetPlatformDict().TryGetValue(other, out Platform platform);
             
             if (platform == null) {
                 Debug.LogError("This platform dont attached by Platform script");
@@ -308,9 +296,9 @@ public class Player : MonoBehaviour {
             }
 
             // Handle interaction with Corner
-            if (platform.HasCornerOn()) {
+            if (platform.TryGetCorner(out Corner corner)) {
 
-                this.pendingCorner = other.GetComponentInChildren<Corner>();
+                this.pendingCorner = corner;
             }
 
             // Handle interaction with Path platform
@@ -325,7 +313,7 @@ public class Player : MonoBehaviour {
         else if (other.CompareTag(GameTag.BRIDGE_TAG)) {
             // Interaction with Bridge
 
-            Bridge bridge = other.GetComponent<Bridge>();
+            ChunkGenerator.Instance.GetBridgeDict().TryGetValue(other, out Bridge bridge);
 
             if (bridge == null) {
                 Debug.LogError("This bridge dont attached by Platform script");
@@ -340,7 +328,7 @@ public class Player : MonoBehaviour {
                     RemoveBrick();
                 }
 
-                float xSizeBridge = bridge.GetComponent<BoxCollider>().size.x;
+                float xSizeBridge = bridge.GetBoxCollider().size.x;
                 float maxDistance = xSizeBridge + 0.3f;
 
                 int currentBridgeIndex = bridgeList.IndexOf(bridge);

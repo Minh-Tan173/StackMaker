@@ -12,6 +12,9 @@ public class MainMenuUI : MonoBehaviour
     private void Awake() {
 
         Instance = this;
+    }
+
+    private void Start() {
 
         startButton.onClick.AddListener(() => {
 
@@ -19,10 +22,6 @@ public class MainMenuUI : MonoBehaviour
 
             Hide();
         });
-
-    }
-
-    private void Start() {
 
         // When start game 
         Show();

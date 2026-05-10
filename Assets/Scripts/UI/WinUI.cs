@@ -124,15 +124,15 @@ public class WinUI : MonoBehaviour
         int currentLevel = currentLevelIndex + 1;
         winNotiText.text = $"Win Level {currentLevel}";
 
-        // Setup NextLevelButton
-        int lastLevelIndex = LevelManager.Instance.GetLevelManagerSO().levelSOList.Count - 1;
-        if (currentLevelIndex < lastLevelIndex) {
+        //// Setup NextLevelButton
+        //int lastLevelIndex = LevelManager.Instance.GetLevelManagerSO().levelSOList.Count - 1;
+        //if (currentLevelIndex < lastLevelIndex) {
 
-            ShowNextLevelButton();
-        }
-        else {
-            HideNextLevelButton();
-        }
+        //    ShowNextLevelButton();
+        //}
+        //else {
+        //    HideNextLevelButton();
+        //}
 
         Hide();
     }

@@ -5,6 +5,9 @@ public class Bridge : MonoBehaviour
     [Header("Visual")]
     [SerializeField] private Transform stackVisual;
 
+    [Header("Ref")]
+    [SerializeField] private BoxCollider boxCollider;
+
     private bool isOnStackVisual;
 
     private void Start() {
@@ -29,14 +32,18 @@ public class Bridge : MonoBehaviour
         return this.isOnStackVisual;
     }
 
-    public static Bridge SpawnBridge(Transform bridgePrefab, Transform parent, Vector3 spawnPos , Vector3 angleRotation) {
+    public BoxCollider GetBoxCollider() {
+        return this.boxCollider;
+    }
 
-        Transform bridgeTransform = Instantiate(bridgePrefab, parent);
-        bridgeTransform.gameObject.name = $"Bridge_{spawnPos.x}_{spawnPos.z}";
+    public static Bridge SpawnBridge(Bridge bridgePrefab, Transform parent, Vector3 spawnPos , Vector3 angleRotation) {
 
-        bridgeTransform.localPosition = spawnPos;
-        bridgeTransform.localRotation = Quaternion.Euler(angleRotation);
+        Bridge bridge = Instantiate(bridgePrefab, parent);
+        bridge.gameObject.name = $"Bridge_{spawnPos.x}_{spawnPos.z}";
 
-        return bridgeTransform.GetComponent<Bridge>();
+        bridge.transform.localPosition = spawnPos;
+        bridge.transform.localRotation = Quaternion.Euler(angleRotation);
+
+        return bridge;
     }
 }

@@ -418,6 +418,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Platform
   floorVisual: {fileID: 7217158882670592399}
   stackVisual: {fileID: 9067959039778181451}
+  boxCollider: {fileID: 4823698233186375091}
+  corner: {fileID: 3802480150141689200}
 --- !u!1 &8758719625101370730
 GameObject:
   m_ObjectHideFlags: 0

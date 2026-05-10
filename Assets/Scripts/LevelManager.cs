@@ -17,11 +17,9 @@ public class LevelManager : MonoBehaviour
         WinGame
     }
 
+    public event Action<LevelSO> LoadNewMap;
+
     public event EventHandler OnWinState;
-    public event EventHandler<LoadNewMapEventArgs> LoadNewMap;
-    public class LoadNewMapEventArgs : EventArgs {
-        public LevelSO levelSO;
-    }
     public event EventHandler InitObjectData;
     public event EventHandler ClearObjectData;
     public event EventHandler OnGameSetting;
@@ -34,8 +32,6 @@ public class LevelManager : MonoBehaviour
     [Header("Level Data")]
     [SerializeField] private LevelManagerSO levelManagerSO;
 
-    private const string CURRENT_LEVEL_KEY = "Current_Level";
-
     private int currentLevelIndex;
     private LevelState currentLevelState;
 
@@ -45,22 +41,29 @@ public class LevelManager : MonoBehaviour
 
         Instance = this;
 
-        //// Testing 
-        //PlayerPrefs.SetInt(CURRENT_LEVEL_KEY, 0);
-        //PlayerPrefs.Save();
-
-        this.currentLevelIndex = PlayerPrefs.GetInt(CURRENT_LEVEL_KEY, 0);
+        this.currentLevelIndex = DataManager.GetSavedLevel();
     }
 
     private void Start() {
-
-
 
         LoadLevel(this.currentLevelIndex);
         OnInit();
     }
 
     private IEnumerator WinningCoroutine() {
+
+        // Update Level data first
+
+        if (currentLevelIndex >= levelManagerSO.levelSOList.Count - 1) {
+            // Reached last level --> Restart at level 1
+
+            currentLevelIndex = 0;
+        }
+        else {
+            this.currentLevelIndex += 1;
+        }
+
+        DataManager.SaveLevel(currentLevelIndex);
 
         float nextLevelTimer = 1.5f;
         yield return new WaitForSeconds(nextLevelTimer);
@@ -73,10 +76,6 @@ public class LevelManager : MonoBehaviour
         }
 
         // After CloseTranstion - Reset Data and Prepared Data for next level
-
-        this.currentLevelIndex += 1;
-        PlayerPrefs.SetInt(CURRENT_LEVEL_KEY, currentLevelIndex);
-        PlayerPrefs.Save();
 
         LoadLevel(currentLevelIndex);
         OnInit();
@@ -141,12 +140,13 @@ public class LevelManager : MonoBehaviour
 
         this.currentLevelIndex = levelIndex;
 
-        LoadNewMap?.Invoke(this, new LoadNewMapEventArgs { levelSO = levelManagerSO.levelSOList[this.currentLevelIndex] });
+        LoadNewMap?.Invoke(levelManagerSO.levelSOList[this.currentLevelIndex]);
+
     }
 
     public void LoadLevel(LevelSO levelSO) {
 
-        LoadNewMap?.Invoke(this, new LoadNewMapEventArgs { levelSO = levelSO });
+        LoadNewMap?.Invoke(levelSO);
     }
 
     public void OnPlay() {

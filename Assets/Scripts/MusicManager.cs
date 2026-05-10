@@ -4,12 +4,9 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance { get; private set; }
 
-    private const string MUSIC_VOLUME_KEY = "MusicVolume";
-
     private AudioSource audioSource;
 
     private float musicVolume;
-    private bool isMutedMusic;
 
     private void Awake() {
 
@@ -17,41 +14,29 @@ public class MusicManager : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
 
-        musicVolume = PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY, 1f);
-        audioSource.volume = musicVolume;
+        SetSFXVolume(DataManager.GetMusicData().musicVolume);
 
-        if (Mathf.Approximately(musicVolume, 0f)) {
-
-            isMutedMusic = true;
-        }
-        else {
-            isMutedMusic = false;
-        }
     }
 
-    private void SetVolume(float volume) {
+    private void SetSFXVolume(float volume) {
 
         this.musicVolume = volume;
-        audioSource.volume = musicVolume;
-
-        PlayerPrefs.SetFloat(MUSIC_VOLUME_KEY, volume);
-        PlayerPrefs.Save();
+        audioSource.volume = this.musicVolume;
     }
 
     public void ToggleMusicVolume() {
 
-        isMutedMusic = !isMutedMusic;
+        bool isMutedMusic = DataManager.GetMusicData().isMutedMusic;
 
-        if (isMutedMusic) {
+        if (!isMutedMusic) {
 
-            SetVolume(0f);
+            SetSFXVolume(0f);
         }
         else {
-            SetVolume(1f);
-        }
-    }
 
-    public bool IsMutedMusic() {
-        return this.isMutedMusic;
+            SetSFXVolume(1f);
+        }
+
+        DataManager.SetMusicData(this.musicVolume, !isMutedMusic);
     }
 }

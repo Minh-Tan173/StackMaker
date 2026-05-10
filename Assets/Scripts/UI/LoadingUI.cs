@@ -38,14 +38,14 @@ public class LoadingUI : MonoBehaviour
         while (loadOperation.progress < 1f) {
 
             float progress = Mathf.Clamp01(loadOperation.progress / 0.9f);
-
+    
             float loadSpeed = Time.deltaTime * 0.9f;
 
             visualProgress = Mathf.MoveTowards(visualProgress, progress, loadSpeed);
 
             SetLoadProgress(visualProgress);
 
-            if (visualProgress >= 1f) {
+            if (visualProgress > 0.99f) {
                 loadOperation.allowSceneActivation = true;
             }
 

@@ -6,23 +6,15 @@ public class SoundManager : MonoBehaviour
 
     [SerializeField] private AudioClipRefSO audioClipRefSO;
 
-    private const string SFX_VOLUME_KEY = "SfxVolume";
 
     private float sfxVolume;
-    private bool isMutedSFX = false;
 
     public void Awake() {
 
         Instance = this;
 
-        sfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f);
+        this.sfxVolume = DataManager.GetSFXData().sfxVolume;
 
-        if (Mathf.Approximately(sfxVolume, 0f)) {
-            isMutedSFX = true;
-        }
-        else {
-            isMutedSFX = false;
-        }
     }
 
     private void Start() {
@@ -62,28 +54,17 @@ public class SoundManager : MonoBehaviour
         AudioSource.PlayClipAtPoint(audioClip, position, this.sfxVolume);
     }
 
-    private void SaveVolume(float volume) {
-
-        PlayerPrefs.SetFloat(SFX_VOLUME_KEY, volume);
-        PlayerPrefs.Save();
-    }
-
     public void ToggleSFXVolume() {
 
-        isMutedSFX = !isMutedSFX;
+        bool isMutedSFX = DataManager.GetSFXData().isMutedSFX;
 
-        if (isMutedSFX) {
-
+        if (!isMutedSFX) {
             this.sfxVolume = 0f;
-            SaveVolume(sfxVolume);
         }
         else {
             this.sfxVolume = 1f;
-            SaveVolume(sfxVolume);
         }
-    }
 
-    public bool IsMutedSFX() {
-        return this.isMutedSFX;
+        DataManager.SetSFXData(this.sfxVolume, !isMutedSFX);
     }
 }

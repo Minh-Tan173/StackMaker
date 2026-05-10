@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bridge
   stackVisual: {fileID: 5698757879351334379}
+  boxCollider: {fileID: 655049607379240342}
 --- !u!1 &7282656042116720948
 GameObject:
   m_ObjectHideFlags: 0

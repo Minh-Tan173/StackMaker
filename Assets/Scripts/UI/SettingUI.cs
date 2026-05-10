@@ -142,12 +142,12 @@ public class SettingUI : MonoBehaviour
         rectTransform.anchoredPosition = startPos;
 
         // Update Sound Button
-        if (SoundManager.Instance.IsMutedSFX()) {
+        if (DataManager.GetSFXData().isMutedSFX) {
 
             sfxButton.GetComponent<SpriteSwapButton>().SwapSprite();
         }
         
-        if (MusicManager.Instance.IsMutedMusic()) {
+        if (DataManager.GetMusicData().isMutedMusic) {
 
             musicButton.GetComponent<SpriteSwapButton>().SwapSprite();
         }

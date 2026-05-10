@@ -7,7 +7,7 @@ public class ChunkGenerator : MonoBehaviour
 
     [Header("Prefab")]
     [SerializeField] private Transform platformPrefab;
-    [SerializeField] private Transform bridgePrefab;
+    [SerializeField] private Bridge bridgePrefab;
     [SerializeField] private Transform winPosPrefab;
 
     #region Load Chunk
@@ -25,11 +25,20 @@ public class ChunkGenerator : MonoBehaviour
 
     private WinPos winPos;
 
+    #region
+    private Dictionary<Collider, Platform> platformDict;
+    private Dictionary<Collider, Bridge> bridgeDict;
+
+    #endregion
+
     private void Awake() {
 
         Instance = this;
 
         chunkList = new List<ChunkInstance>();
+
+        platformDict = new Dictionary<Collider, Platform>();
+        bridgeDict = new Dictionary<Collider, Bridge>();
 
         nextAnchorPointList = new List<Vector3>();
     }
@@ -43,9 +52,9 @@ public class ChunkGenerator : MonoBehaviour
         LevelManager.Instance.LoadNewMap -= LevelManager_LoadNewMap;
     }
 
-    private void LevelManager_LoadNewMap(object sender, LevelManager.LoadNewMapEventArgs e) {
+    private void LevelManager_LoadNewMap(LevelSO levelSO) {
 
-        this.levelSO = e.levelSO;
+        this.levelSO = levelSO;
 
         ClearLevelData();
 
@@ -82,12 +91,17 @@ public class ChunkGenerator : MonoBehaviour
                 for (int y = 0; y < chunkData.chunkHeight; y++) {
 
                     Vector2Int nodePos = new Vector2Int(x, y);
-                    Platform platformVisual = SpawnPlatform(x, y, newChunk.chunkTransform);
+                    Platform platformTransform = SpawnPlatform(x, y, newChunk.chunkTransform);
 
-                    newChunk.gridNodeDict.Add(nodePos, platformVisual);
+                    newChunk.gridNodeDict.Add(nodePos, platformTransform);
                     newChunk.gridMaps[x, y] = GridNode.NodeID.Empty;
 
+                    // Create Platform Dictionary
+                    Collider collider = platformTransform.GetBoxCollider();
+                    if (!platformDict.ContainsKey(collider)) {
 
+                        platformDict.Add(collider, platformTransform);
+                    }
                 }
             }
 
@@ -210,7 +224,7 @@ public class ChunkGenerator : MonoBehaviour
             spawnPos += spawnPosPlus;
 
             GetBridgeFromPool(chunkInstance.chunkTransform, spawnPos, angle);
-            //Bridge.SpawnBridge(bridgePrefab, chunkInstance.chunkTransform, spawnPos, angle);
+            
         }
 
         Vector3 nextChunkPos = spawnPos + spawnPosPlus;
@@ -230,7 +244,6 @@ public class ChunkGenerator : MonoBehaviour
         else {
             winPos.gameObject.SetActive(true);
         }
-
 
         // Gắn với điểm neo cuối cùng (Local Space)
         winPos.transform.localPosition = finalAnchorPos;
@@ -316,7 +329,7 @@ public class ChunkGenerator : MonoBehaviour
         if (platformPool.Count > 0) {
             // If there is an available platform in the pool
 
-            platform = platformPool[platformPool.Count - 1];
+            platform = platformPool[^1];
             platformPool.RemoveAt(platformPool.Count - 1);
 
             platform.transform.SetParent(parent);
@@ -353,6 +366,13 @@ public class ChunkGenerator : MonoBehaviour
             // If pool is empty
 
             bridge = Bridge.SpawnBridge(bridgePrefab, parent, localPos, angleRotation);
+
+            // After Spawn Bridge --> Add to Bridge Dict
+            Collider bridgeCollider = bridge.GetBoxCollider();
+            if (!bridgeDict.ContainsKey(bridgeCollider)) {
+
+                bridgeDict.Add(bridgeCollider, bridge);
+            }
         }
 
         bridge.HideStack();
@@ -370,6 +390,14 @@ public class ChunkGenerator : MonoBehaviour
 
     public List<ChunkInstance> GetChunkList() {
         return this.chunkList;
+    }
+
+    public Dictionary<Collider, Platform> GetPlatformDict() {
+        return this.platformDict;
+    }
+
+    public Dictionary<Collider, Bridge> GetBridgeDict() {
+        return this.bridgeDict;
     }
 
 }

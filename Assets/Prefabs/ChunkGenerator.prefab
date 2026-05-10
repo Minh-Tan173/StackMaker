@@ -45,5 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridGenerator
   platformPrefab: {fileID: 6219992150755151754, guid: 8f9f368e381daab4da845763d32316d6, type: 3}
-  bridgePrefab: {fileID: 683010532310645628, guid: 86e8b5d453060d942ae68f38dab45fe5, type: 3}
+  bridgePrefab: {fileID: 8085535487949253934, guid: 86e8b5d453060d942ae68f38dab45fe5, type: 3}
   winPosPrefab: {fileID: 3256946138913599874, guid: 8433fa50b6f21114885c6995e53d2876, type: 3}
