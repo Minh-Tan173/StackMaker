@@ -354,7 +354,7 @@ public class ChunkGenerator : MonoBehaviour
         if (bridgePool.Count > 0) {
             // If there is an available bridge in the pool
 
-            bridge = bridgePool[bridgePool.Count - 1];
+            bridge = bridgePool[^1];
             bridgePool.RemoveAt(bridgePool.Count - 1);
             bridge.gameObject.SetActive(true);
 
