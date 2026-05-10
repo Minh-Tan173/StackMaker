@@ -46,9 +46,13 @@ public class InputManager : MonoBehaviour
         inputActions.Touch.TouchPress.started += TouchPress_started;
         inputActions.Touch.TouchPress.canceled += TouchPress_canceled;
 
+#if UNITY_EDITOR
+        // Testing
+        inputActions.Testing.Enable();
+        inputActions.Testing.ResetLevel.performed += ResetLevel_performed;
+#endif
 
     }
-
     private void OnDestroy() {
 
         inputActions.Mouse.MousePress.started -= MousePress_started;
@@ -57,7 +61,18 @@ public class InputManager : MonoBehaviour
         inputActions.Touch.TouchPress.started -= TouchPress_started;
         inputActions.Touch.TouchPress.canceled -= TouchPress_canceled;
 
+        inputActions.Testing.ResetLevel.performed -= ResetLevel_performed;
     }
+
+#if UNITY_EDITOR
+    private void ResetLevel_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        // ONLY USING IN TESTING
+
+        LevelManager.Instance.SetLevelIndex(0);
+
+        LevelManager.Instance.OnRetry(LevelManager.Instance.OnPlay);
+    }
+#endif
 
     private void TouchPress_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 

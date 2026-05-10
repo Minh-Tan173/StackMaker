@@ -41,12 +41,12 @@ public class LevelManager : MonoBehaviour
 
         Instance = this;
 
-        this.currentLevelIndex = DataManager.GetSavedLevel();
+        //this.currentLevelIndex = DataManager.GetSavedLevel();
     }
 
     private void Start() {
 
-        LoadLevel(this.currentLevelIndex);
+        LoadLevel(DataManager.GetSavedLevel());
         OnInit();
     }
 
@@ -211,4 +211,11 @@ public class LevelManager : MonoBehaviour
             OffGameSetting?.Invoke(this, EventArgs.Empty);
         }
     }
+
+#if UNITY_EDITOR
+    public void SetLevelIndex(int levelIndex) {
+        this.currentLevelIndex = levelIndex;
+        DataManager.SaveLevel(levelIndex);
+    }
+#endif
 }
